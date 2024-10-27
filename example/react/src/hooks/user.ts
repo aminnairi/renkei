@@ -1,6 +1,6 @@
 import { ChangeEventHandler, FormEventHandler, useCallback, useEffect, useState } from 'react'
 import { Users } from '@superblue/example-core/routes/getUsers';
-import { client } from "../client";
+import { client } from "../superblue/client";
 import { exhaustive } from "exhaustive";
 
 export const useUser = () => {
