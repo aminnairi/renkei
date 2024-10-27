@@ -50,6 +50,14 @@ export const getBody = async (request: IncomingMessage) => {
   return body;
 };
 
+export const toJsonOr = <Fallback>(fallback: Fallback, input: string): unknown => {
+  try {
+    return JSON.parse(input);
+  } catch {
+    return fallback;
+  }
+};
+
 /**
  * Create a new application for communicating seamlessly between a client and a server.
  */
@@ -72,6 +80,11 @@ export const createApplication = <Request extends ZodSchema, Response extends Zo
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(parsedRequest),
         });
+
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(text);
+        }
 
         const responseData = await response.json();
         return responseSchema.parse(responseData);
@@ -125,7 +138,7 @@ export const createApplication = <Request extends ZodSchema, Response extends Zo
         }
 
         const body = await getBody(request);
-        const parsedRequest = JSON.parse(body);
+        const parsedRequest = toJsonOr(undefined, body);
         const requestSchema = routes[routePath]["request"];
         const validatedRequest = requestSchema.parse(parsedRequest)
         const implementation = implementations[routePath];
