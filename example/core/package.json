@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "name": "@superblue/example-core",
+  "version": "0.1.0",
+  "description": "Shared constants for superblue example"
+}

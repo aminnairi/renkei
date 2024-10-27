@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "type": "module",
+  "name": "@superblue/example-node",
+  "version": "0.1.0",
+  "description": "Node example for superblue",
+  "scripts": {
+    "start": "tsx --watch index.ts"
+  },
+  "dependencies": {
+    "tsx": "^4.19.2"
+  }
+}
