@@ -1,21 +1,8 @@
-import { createApplication, createRoute, z } from "@superblue/core";
-
-export const createUserRoute = createRoute({
-    request: z.object({
-      firstname: z.string()
-    }),
-    response: z.discriminatedUnion("success", [
-      z.object({
-        success: z.literal(true),
-        message: z.string()
-      }),
-      z.object({
-        success: z.literal(false),
-        error: z.string()
-      })
-    ])
-  })
+import { createApplication } from "@superblue/core";
+import { createUserRoute } from "./routes/createUser";
+import { getUsersRoute } from "./routes/getUsers";
 
 export const { createClient, createHandler, createImplementation } = createApplication({
-  createUser: createUserRoute
+  createUser: createUserRoute,
+  getUsers: getUsersRoute
 });
