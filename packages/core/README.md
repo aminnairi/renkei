@@ -1,6 +1,6 @@
 # @superblue/core
 
-Isomorphic client & server communication
+Effortless & type-safe communication between client and server
 
 ## Installation
 
