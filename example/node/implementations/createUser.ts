@@ -5,21 +5,52 @@ import { users } from "../state/users";
 export const createUserImplementation = createImplementation({
   route: "createUser",
   implementation: async ({ firstname, lastname }) => {
+    const trimmedFirstname = firstname.trim();
+    const trimmedLastname = lastname.trim();
+
+    if (trimmedFirstname.length === 0) {
+      return {
+        success: false,
+        error: "FIRSTNAME_EMPTY"
+      };
+    }
+
+    if (trimmedLastname.length === 0) {
+      return {
+        success: false,
+        error: "LASTNAME_EMPTY"
+      };
+    }
+
+    if (trimmedFirstname.length > 50) {
+      return {
+        success: false,
+        error: "FIRSTNAME_TOO_LONG"
+      };
+    }
+
+    if (trimmedLastname.length > 50) {
+      return {
+        success: false,
+        error: "LASTNAME_TOO_LONG"
+      };
+    }
+
     const alreadyExistingUser = users.find(user => {
-      return user.firstname === firstname && user.lastname === lastname;
+      return user.firstname === trimmedFirstname && user.lastname === trimmedLastname;
     });
 
     if (alreadyExistingUser) {
       return {
         success: false,
-        error: "User already exists."
+        error: "USER_ALREADY_EXISTS"
       };
     }
 
     users.push({
       identifier: randomUUID(),
-      firstname,
-      lastname
+      firstname: trimmedFirstname,
+      lastname: trimmedLastname
     });
 
     return {

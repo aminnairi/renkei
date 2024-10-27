@@ -12,7 +12,13 @@ export const createUserRoute = createRoute({
     }),
     z.object({
       success: z.literal(false),
-      error: z.string()
+      error: z.union([
+        z.literal("FIRSTNAME_EMPTY"),
+        z.literal("LASTNAME_EMPTY"),
+        z.literal("FIRSTNAME_TOO_LONG"),
+        z.literal("LASTNAME_TOO_LONG"),
+        z.literal("USER_ALREADY_EXISTS")
+      ])
     })
   ])
 })
