@@ -18,6 +18,16 @@ export const useUser = () => {
     setLastname(event.target.value);
   }, []);
 
+  const getUsers = useCallback(async () => {
+    try {
+      const receivedUsers = await client.getUsers(undefined);
+      setUsers(receivedUsers);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      setError(`Unexpected error: ${errorMessage}`);
+    }
+  }, []);
+
   const createUser: FormEventHandler = useCallback(async (event) => {
     try {
       event.preventDefault();
@@ -31,6 +41,7 @@ export const useUser = () => {
 
       if (response.success) {
         setMessage(response.message);
+        getUsers();
       } else {
         exhaustive(response.error, {
           FIRSTNAME_EMPTY: () => {
@@ -54,17 +65,11 @@ export const useUser = () => {
       const errorMessage = error instanceof Error ? error.message : String(error);
       setError(`Unexpected error: ${errorMessage}`);
     }
-  }, [firstname, lastname]);
+  }, [firstname, getUsers, lastname]);
 
-  const getUsers = useCallback(async () => {
-    try {
-      const receivedUsers = await client.getUsers();
-      setUsers(receivedUsers);
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      setError(`Unexpected error: ${errorMessage}`);
-    }
-  }, []);
+  useEffect(() => {
+    getUsers();
+  }, [getUsers]);
 
   return {
     lastname,
