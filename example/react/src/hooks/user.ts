@@ -1,6 +1,7 @@
 import { ChangeEventHandler, FormEventHandler, useCallback, useState } from 'react'
 import { Users } from '@superblue/example-core/routes/getUsers';
 import { client } from "../client";
+import { exhaustive } from "exhaustive";
 
 export const useUser = () => {
   const [firstname, setFirstname] = useState("");
@@ -31,7 +32,23 @@ export const useUser = () => {
       if (response.success) {
         setMessage(response.message);
       } else {
-        setError(response.error);
+        exhaustive(response.error, {
+          FIRSTNAME_EMPTY: () => {
+            setError("First name should not be empty.");
+          },
+          FIRSTNAME_TOO_LONG: () => {
+            setError("First name should be no more than 50 characters.");
+          },
+          LASTNAME_EMPTY: () => {
+            setError("Last name should not be empty.");
+          },
+          LASTNAME_TOO_LONG: () => {
+            setError("Last name should be no more than 50 characters.");
+          },
+          USER_ALREADY_EXISTS: () => {
+            setError("User already exist.");
+          }
+        })
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
