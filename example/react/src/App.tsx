@@ -1,6 +1,3 @@
-import { ChangeEventHandler, FormEventHandler, useCallback, useState } from 'react'
-import { Users } from '@superblue/example-core/routes/getUsers';
-import { client } from "./client";
 
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
@@ -14,49 +11,20 @@ import TableBody from "@mui/material/TableBody";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import Container from "@mui/material/Container";
-
+import { useUser } from "./hooks/user";
 
 function App() {
-  const [firstname, setFirstname] = useState("");
-  const [lastname, setLastname] = useState("");
-  const [users, setUsers] = useState<Users>([]);
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
-
-  const updateFirstname: ChangeEventHandler<HTMLInputElement> = useCallback((event) => {
-    setFirstname(event.target.value);
-  }, []);
-
-  const updateLastname: ChangeEventHandler<HTMLInputElement> = useCallback((event) => {
-    setLastname(event.target.value);
-  }, []);
-
-  const createUser: FormEventHandler = useCallback(async (event) => {
-    try {
-      event.preventDefault();
-      setError("");
-      setMessage("");
-
-      const response = await client.createUser({
-        firstname,
-        lastname
-      })
-
-      if (response.success) {
-        setMessage(response.message);
-      } else {
-        setError(response.error);
-      }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      setError(errorMessage);
-    }
-  }, [firstname, lastname]);
-
-  const getUsers = useCallback(async () => {
-    const receivedUsers = await client.getUsers();
-    setUsers(receivedUsers);
-  }, []);
+  const {
+    createUser,
+    error,
+    firstname,
+    getUsers,
+    lastname,
+    message,
+    updateFirstname,
+    updateLastname,
+    users
+  } = useUser()
 
   return (
     <Container>
@@ -74,19 +42,42 @@ function App() {
             {error}
           </Alert>
         )}
-        <Stack component="form" onSubmit={createUser} spacing={3}>
-          <TextField label="First Name" type="text" value={firstname} onChange={updateFirstname} />
-          <TextField type="text" label="Last Name" value={lastname} onChange={updateLastname} />
-          <Button variant="contained" sx={{ alignSelf: "center" }} type="submit">
+        <Stack 
+          component="form" 
+          onSubmit={createUser} 
+          spacing={3}>
+          <TextField 
+            label="First Name" 
+            type="text" 
+            value={firstname} 
+            onChange={updateFirstname} />
+          <TextField 
+            type="text" 
+            label="Last Name" 
+            value={lastname} 
+            onChange={updateLastname} />
+          <Button 
+            variant="contained" 
+            sx={{ alignSelf: "center" }} 
+            type="submit">
             Create
           </Button>
         </Stack>
-        <Typography variant="h4" align="center">Users</Typography>
-        <Button onClick={getUsers} variant="outlined" sx={{ alignSelf: "center" }}>
+        <Typography 
+          variant="h4" 
+          align="center">
+          Users
+        </Typography>
+        <Button 
+          onClick={getUsers} 
+          variant="outlined" 
+          sx={{ alignSelf: "center" }}>
           Refresh
         </Button>
         {users.length === 0 && (
-          <Typography align="center">No users available.</Typography>
+          <Typography align="center">
+            No users available.
+          </Typography>
         )}
         {users.length !== 0 && (
           <TableContainer>
@@ -107,9 +98,15 @@ function App() {
               <TableBody>
                 {users.map(user => (
                   <TableRow key={user.identifier}>
-                    <TableCell>{user.identifier}</TableCell>
-                    <TableCell>{user.firstname}</TableCell>
-                    <TableCell>{user.lastname}</TableCell>
+                    <TableCell>
+                      {user.identifier}
+                    </TableCell>
+                    <TableCell>
+                      {user.firstname}
+                    </TableCell>
+                    <TableCell>
+                      {user.lastname}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
