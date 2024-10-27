@@ -9,10 +9,6 @@ function App() {
   const [error, setError] = useState("");
 
   const createUser = async () => {
-    setError("");
-    setMessage("");
-    setLoading(true);
-
     const response = await client.createUser({
       firstname: "John DOE"
     })
@@ -22,12 +18,19 @@ function App() {
     } else {
       setError(response.error);
     }
-
-    setLoading(false);
   };
 
   useEffect(() => {
-    createUser();
+    setError("");
+    setMessage("");
+    setLoading(true);
+
+    createUser().catch(error => {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      setError(`Unexpected error: ${errorMessage}`);
+    }).finally(() => {
+      setLoading(false);
+    });
   }, []);
 
   if (loading) {
