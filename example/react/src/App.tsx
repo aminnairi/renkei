@@ -1,6 +1,6 @@
 import { ChangeEventHandler, FormEventHandler, useCallback, useState } from 'react'
-import { createClient } from "@superblue/example-core";
 import { Users } from '@superblue/example-core/routes/getUsers';
+import { client } from "./client";
 
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
@@ -15,14 +15,11 @@ import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import Container from "@mui/material/Container";
 
-const client = createClient({ server: "http://localhost:8000" });
 
 function App() {
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
-
   const [users, setUsers] = useState<Users>([]);
-
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
