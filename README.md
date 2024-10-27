@@ -78,7 +78,7 @@ const createUserImplementation = createImplementation({
 
     return {
       success: true,
-      message: `Createed ${firstname}`
+      message: `Created ${firstname}`
     }
   }
 });
