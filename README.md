@@ -1,5 +1,7 @@
 # superblue
 
+Effortless & type-safe communication between client and server
+
 ## Why
 
 ### Http does not scale
