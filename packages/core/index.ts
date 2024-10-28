@@ -80,7 +80,8 @@ export const createApplication = <Request extends ZodSchema, Response extends Zo
           method: "POST",
           headers: {
             ...options.headers,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Accept": "application/json"
           },
           body: JSON.stringify(parsedRequest),
         });
@@ -135,6 +136,15 @@ export const createApplication = <Request extends ZodSchema, Response extends Zo
 
           response.writeHead(412, Object.fromEntries(headers.entries()));
           response.end(JSON.stringify({ error: "Content-Type header is not application/json" }));
+
+          return;
+        }
+
+        if (request.headers["accept"] !== "application/json") {
+          headers.set("Content-Type", "application/json");
+
+          response.writeHead(412, Object.fromEntries(headers.entries()));
+          response.end(JSON.stringify({ error: "Accept header is not application/json" }));
 
           return;
         }
