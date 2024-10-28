@@ -12,6 +12,8 @@ Traditional HTTP protocols are simple and universal, but they present challenges
 - **Error and Status Handling**: HTTP error handling can become inconsistent or imprecise, especially in environments with numerous dependencies and potential error sources.
 - **Consistency and Code Reuse**: As applications grow, maintaining consistent handling of routes, schemas, and error structures across multiple services becomes harder. Repeated configuration in each service leads to duplicated code and increases the risk of inconsistency.
 
+`superblue` enhances the HTTP protocol by enabling you to directly write functions that can be called directly from the client. Internally, it uses the HTTP protocol in a way that enables you to write your code as a function rather than as an HTTP request, just like you would for any other function.
+
 ### JavaScript does not scale
 
 JavaScript offers flexibility but lacks typing guarantees, making large-scale projects more challenging to maintain:
@@ -29,10 +31,9 @@ Error handling is a complex aspect of modern application development, with uniqu
 - **Standardized Error Structures**: Without a unified structure, errors across services are inconsistent, making it difficult for clients to interpret and handle them accurately.
 - **Centralized Control**: Configuring access controls and error handling in each service individually adds maintenance overhead and increases security risks. superblue allows centralized configuration of error handling, reducing redundancy and improving error clarity.
 - **Detailed Error Messages for Clients**: Client applications, such as mobile and web apps, need structured, predictable error responses to provide feedback to users and make intelligent retry or fallback decisions.
-- **Improved Security with Controlled Responses**: Detailed error messages must be managed carefully to avoid revealing sensitive information. With superblue, error responses can be configured to balance user feedback and security, ensuring that only necessary information is shared while maintaining safe practices.
+- **Improved Security with Controlled Responses**: Detailed error messages must be managed carefully to avoid revealing sensitive information. With `superblue`, error responses can be configured to balance user feedback and security, ensuring that only necessary information is shared while maintaining safe practices.
 
 With `superblue`, error handling becomes more manageable, consistent, and secure across both server and client applications. Centralized error structures reduce duplication and provide a more predictable experience for clients, while controlled error responses enhance security.
-
 
 ## Usage
 
@@ -115,7 +116,7 @@ server.close();
 
 Package | Description
 ---|---
-[`@superblue/core`](./packages/core) | Isomorphic client & server communication
+[`@superblue/core`](./packages/core) | Effortless type-safe communication between client and server
 
 ## Example
 
