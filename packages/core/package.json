@@ -3,7 +3,7 @@
   "type": "module",
   "name": "@superblue/core",
   "version": "0.1.0",
-  "description": "Effortless & type-safe communication between client and server",
+  "description": "Effortless type-safe communication between client and server",
   "dependencies": {
     "zod": "3.23.8"
   },

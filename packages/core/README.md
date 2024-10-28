@@ -1,6 +1,6 @@
 # @superblue/core
 
-Effortless & type-safe communication between client and server
+Effortless type-safe communication between client and server
 
 ## Installation
 
