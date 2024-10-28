@@ -9,7 +9,7 @@ export type Route<Request extends ZodSchema, Response extends ZodSchema> = {
 export type Routes<Request extends ZodSchema, Response extends ZodSchema> = Record<string, Route<Request, Response>>
 
 export type Client<Request extends ZodSchema, Response extends ZodSchema, GenericRoutes extends Routes<Request, Response>> = {
-  [Route in keyof GenericRoutes]: (request: z.infer<GenericRoutes[Route]["request"]>) => Promise<z.infer<GenericRoutes[Route]["response"]>>
+  [Route in keyof GenericRoutes]: (request: z.infer<GenericRoutes[Route]["request"]>, options?: RequestInit) => Promise<z.infer<GenericRoutes[Route]["response"]>>
 }
 
 export type CreateClient<Request extends ZodSchema, Response extends ZodSchema, GenericRoutes extends Routes<Request, Response>> = (options: { server: string }) => Client<Request, Response, GenericRoutes>
@@ -69,15 +69,19 @@ export const createApplication = <Request extends ZodSchema, Response extends Zo
     const client: Partial<Client<Request, Response, GenericRoutes>> = {};
 
     for (const route in routes) {
-      client[route] = async (requestData) => {
+      client[route] = async (requestData, options = {}) => {
         const requestSchema = routes[route].request;
         const responseSchema = routes[route].response;
 
         const parsedRequest = requestSchema.parse(requestData);
 
         const response = await fetch(`${server}/${route}`, {
+          ...options,
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            ...options.headers,
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify(parsedRequest),
         });
 

@@ -21,6 +21,7 @@ export const useUser = () => {
   const getUsers = useCallback(async () => {
     try {
       const receivedUsers = await client.getUsers(undefined);
+
       setUsers(receivedUsers);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
