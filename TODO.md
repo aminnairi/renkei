@@ -4,7 +4,6 @@
 
 - Add the possibility to use adapters when initializing the client
 - Add the possibility to use adapters when initializing the server
-- Check that the content type header from the request has been correctly set to `application/json`
 - Allow accessing bits of the request from the implementations
 
 ## @superblue/client
