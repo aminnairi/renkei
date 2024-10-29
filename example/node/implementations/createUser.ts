@@ -1,8 +1,8 @@
-import { createImplementation } from "@superblue/example-core";
+import { createHttpImplementation } from "@superblue/example-core";
 import { randomUUID } from "crypto";
 import { users } from "../state/users";
 
-export const createUserImplementation = createImplementation({
+export const createUserImplementation = createHttpImplementation({
   route: "createUser",
   implementation: async ({ firstname, lastname }) => {
     const trimmedFirstname = firstname.trim();
