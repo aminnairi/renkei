@@ -36,19 +36,22 @@ export type CreateClient<Request extends ZodSchema, Response extends ZodSchema, 
 
 export type HttpImplementation<Request extends ZodSchema, Response extends ZodSchema, GenericRoutes extends Routes<Request, Response>, GenericRoute extends keyof GenericRoutes> = GenericRoutes[GenericRoute] extends HttpRoute<Request, Response> ? (request: z.infer<GenericRoutes[GenericRoute]["request"]>) => Promise<z.infer<GenericRoutes[GenericRoute]["response"]>> : never
 
-export type ServerSentEventImplementation<Response extends ZodSchema> = (emit: (response: z.infer<Response>) => void) => void
+export type ServerSentEventImplementation<Response extends ZodSchema, GenericRoutes extends Routes<any, Response>> = (emit: (response: z.infer<GenericRoutes[keyof GenericRoutes]["response"]>) => void) => void
 
 export type Implementations<Request extends ZodSchema, Response extends ZodSchema, GenericRoutes extends Routes<Request, Response>> = {
-  [Route in keyof GenericRoutes]: GenericRoutes[Route] extends HttpRoute<Request, Response>
+  [Route in keyof GenericRoutes]:
+  GenericRoutes[Route] extends HttpRoute<Request, Response>
   ? HttpImplementation<Request, Response, GenericRoutes, Route>
-  : ServerSentEventImplementation<Response>
+  : GenericRoutes[Route] extends ServerSentEventRoute<Response>
+  ? ServerSentEventImplementation<Response, GenericRoutes>
+  : never
 }
 
 export type CreateHandler<Request extends ZodSchema, Response extends ZodSchema, GenericRoutes extends Routes<Request, Response>> = (options: { clients: Array<string>, implementations: Implementations<Request, Response, GenericRoutes> }) => (request: IncomingMessage, Response: ServerResponse) => void
 
 export type CreateHttpImplementation<Request extends ZodSchema, Response extends ZodSchema, GenericRoutes extends Routes<Request, Response>> = <GenericRoute extends keyof GenericRoutes>(options: { route: GenericRoute, implementation: HttpImplementation<Request, Response, GenericRoutes, GenericRoute> }) => HttpImplementation<Request, Response, GenericRoutes, GenericRoute>
 
-export type CreateServerSentEventImplementation<Request extends ZodSchema, Response extends ZodSchema, GenericRoutes extends Routes<Request, Response>> = <GenericRoute extends keyof GenericRoutes>(options: { route: GenericRoute, implementation: ServerSentEventImplementation<Response> }) => ServerSentEventImplementation<Response>
+export type CreateServerSentEventImplementation<Response extends ZodSchema, GenericRoutes extends Routes<any, Response>> = <GenericRoute extends keyof GenericRoutes>(options: { route: GenericRoute, implementation: ServerSentEventImplementation<Response, GenericRoutes> }) => ServerSentEventImplementation<Response, GenericRoutes>
 
 export type Application<Request extends ZodSchema, Response extends ZodSchema, GenericRoutes extends Routes<Request, Response>> = {
   /**
@@ -62,7 +65,7 @@ export type Application<Request extends ZodSchema, Response extends ZodSchema, G
   /**
    * Create a concrete implementation of a route that should emit Server-Sent Events by defining what to do when reciveing a request.
    */
-  createServerSentEventImplementation: CreateServerSentEventImplementation<Request, Response, GenericRoutes>
+  createServerSentEventImplementation: CreateServerSentEventImplementation<Response, GenericRoutes>
   /**
    * Create a function that will be able to parse the request, and interact with the client through the response.
    */
@@ -254,7 +257,7 @@ export const createApplication = <Request extends ZodSchema, Response extends Zo
     return implementation;
   };
 
-  const createServerSentEventImplementation = <GenericRoute extends keyof GenericRoutes>({ implementation }: { route: GenericRoute, implementation: ServerSentEventImplementation<Response> }): ServerSentEventImplementation<Response> => {
+  const createServerSentEventImplementation = <GenericRoute extends keyof GenericRoutes>({ implementation }: { route: GenericRoute, implementation: ServerSentEventImplementation<Response, GenericRoutes> }): ServerSentEventImplementation<Response, GenericRoutes> => {
     return implementation;
   };
 
