@@ -1,6 +1,7 @@
 import { createHttpImplementation } from "@superblue/example-core";
 import { randomUUID } from "crypto";
 import { users } from "../state/users";
+import { userCreatedEvent } from "../events/userCreatedEvent";
 
 export const createUserImplementation = createHttpImplementation({
   route: "createUser",
@@ -47,11 +48,15 @@ export const createUserImplementation = createHttpImplementation({
       };
     }
 
-    users.push({
+    const user = {
       identifier: randomUUID(),
       firstname: trimmedFirstname,
       lastname: trimmedLastname
-    });
+    };
+
+    users.push(user);
+
+    userCreatedEvent.emit("user", user);
 
     return {
       success: true,
