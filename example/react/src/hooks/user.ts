@@ -72,6 +72,12 @@ export const useUser = () => {
     getUsers();
   }, [getUsers]);
 
+  useEffect(() => {
+    client.userCreated((user) => {
+      console.log(`Received a user: ${user.firstname} ${user.lastname}`);
+    });
+  }, []);
+
   return {
     lastname,
     firstname,
