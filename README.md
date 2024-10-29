@@ -120,6 +120,8 @@ server.close();
 import { createApplication, createServerSentEventRoute, z } from "@superblue/core"
 import { createServer } from "http";
 
+// ROUTE
+
 const timeSentRoute = createServerSentEventRoute({
   response: z.object({
     hours: z.number(),
@@ -127,9 +129,13 @@ const timeSentRoute = createServerSentEventRoute({
   })
 });
 
+// APPLICATION
+
 const { createClient, createHandler, createServerSentEventImplementation } = createApplication({
   timeSent: timeSentRoute
 });
+
+// IMPLEMENTATION
 
 const timeSentImplementation = createServerSentEventImplementation({
   route: "timeSent",
@@ -147,12 +153,22 @@ const timeSentImplementation = createServerSentEventImplementation({
   }
 });
 
+// SERVER
+
 const handler = createHandler({
   clients: ["http://localhost:8000"],
   implementations: {
     timeSent: timeSentImplementation
   }
 });
+
+const server = createServer(handler);
+
+server.listen(8000, "0.0.0.0", () => {
+  console.log("Server listening on http://localhost:8000");
+});
+
+// CLIENT
 
 const client = createClient({
   server: "http://localhost:8000"
@@ -162,11 +178,6 @@ client.timeSent(({ hours, minutes }) => {
   console.log(`Its ${hours}:${minutes}`);
 });
 
-const server = createServer(handler);
-
-server.listen(8000, "0.0.0.0", () => {
-  console.log("Server listening on http://localhost:8000");
-});
 
 client.timeSent(({ minutes, hours }) => {
   console.log(`It is ${hours}:${minutes}`);
