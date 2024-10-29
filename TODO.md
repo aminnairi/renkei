@@ -2,6 +2,7 @@
 
 ## @superblue/core
 
+- Only allow the possibility to use an abortController for http routes instead of allowing everything from `RequestInit`
 - Add the possibility to use adapters when initializing the client
 - Add the possibility to use adapters when initializing the server
 - Allow accessing bits of the request from the implementations
