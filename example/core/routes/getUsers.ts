@@ -1,4 +1,4 @@
-import { createRoute, z } from "@superblue/core";
+import { createHttpRoute, z } from "@superblue/core";
 
 export const usersSchema = z.array(z.object({
   identifier: z.string(),
@@ -6,7 +6,7 @@ export const usersSchema = z.array(z.object({
   lastname: z.string()
 }))
 
-export const getUsersRoute = createRoute({
+export const getUsersRoute = createHttpRoute({
   request: z.void(),
   response: usersSchema
 });

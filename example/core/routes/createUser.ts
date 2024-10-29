@@ -1,6 +1,6 @@
-import { createRoute, z } from "@superblue/core";
+import { createHttpRoute, z } from "@superblue/core";
 
-export const createUserRoute = createRoute({
+export const createUserRoute = createHttpRoute({
   request: z.object({
     firstname: z.string(),
     lastname: z.string()
