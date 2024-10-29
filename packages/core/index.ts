@@ -99,6 +99,10 @@ export const createApplication = <Request extends ZodSchema, Response extends Zo
       get: (_, routeName: string) => {
         const route = routes[routeName];
 
+        if (route === undefined) {
+          throw new Error(`Route not found: ${routeName}.`);
+        }
+
         if (isHttpRoute(route)) {
           return async (requestData: unknown) => {
             const requestSchema = route.request;
@@ -123,8 +127,10 @@ export const createApplication = <Request extends ZodSchema, Response extends Zo
             const responseData = await response.json();
             return responseSchema.parse(responseData);
           }
-        } else {
-          return (onData: (data: z.infer<typeof route.response>) => void) => {
+        }
+        
+        if (isServerSentEventRoute(route)) {
+          return (onData: (data: Response) => void) => {
             const eventSource = new EventSource(`${server}/${routeName}`);
 
             eventSource.addEventListener("message", (event) => {
@@ -137,6 +143,8 @@ export const createApplication = <Request extends ZodSchema, Response extends Zo
             }
           }
         }
+
+        throw new Error(`Invalid route type for ${routeName}, expected http or serverSentEvent`);
       }
     });
   };
@@ -189,8 +197,16 @@ export const createApplication = <Request extends ZodSchema, Response extends Zo
 
         const route = routes[routePath];
 
+        if (route === undefined) {
+          throw new Error(`Route not found: ${routePath}.`);
+        }
+
         if (isServerSentEventRoute(route)) {
           const implementation = implementations[routePath];
+
+          if (implementation === undefined) {
+            throw new Error(`Implementation not found for route ${routePath}`);
+          }
 
           headers.set("Content-Type", "text/event-stream");
           headers.set("Cache-Control", "no-cache");
