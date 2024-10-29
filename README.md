@@ -114,6 +114,65 @@ if (response.success) {
 server.close();
 ```
 
+### Create a Server Sent Event route
+
+```typescript
+import { createApplication, createServerSentEventRoute, z } from "@superblue/core"
+import { createServer } from "http";
+
+const timeSentRoute = createServerSentEventRoute({
+  response: z.object({
+    hours: z.number(),
+    minutes: z.number()
+  })
+});
+
+const { createClient, createHandler, createServerSentEventImplementation } = createApplication({
+  timeSent: timeSentRoute
+});
+
+const timeSentImplementation = createServerSentEventImplementation({
+  route: "timeSent",
+  implementation: (emit) => {
+    setInterval(() => {
+      const date = new Date();
+      const hours = date.getHours();
+      const minutes = date.getMinutes();
+
+      emit({
+        hours,
+        minutes
+      });
+    }, 1000);
+  }
+});
+
+const handler = createHandler({
+  clients: ["http://localhost:8000"],
+  implementations: {
+    timeSent: timeSentImplementation
+  }
+});
+
+const client = createClient({
+  server: "http://localhost:8000"
+});
+
+client.timeSent(({ hours, minutes }) => {
+  console.log(`Its ${hours}:${minutes}`);
+});
+
+const server = createServer(handler);
+
+server.listen(8000, "0.0.0.0", () => {
+  console.log("Server listening on http://localhost:8000");
+});
+
+client.timeSent(({ minutes, hours }) => {
+  console.log(`It is ${hours}:${minutes}`);
+});
+```
+
 ## Packages
 
 Package | Description
