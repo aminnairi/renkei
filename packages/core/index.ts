@@ -1,29 +1,54 @@
 import { IncomingMessage, ServerResponse } from "http";
 import { z, ZodSchema } from "zod";
 
-export type Route<Request extends ZodSchema, Response extends ZodSchema> = {
+export type ServerSentEventRoute<Response extends ZodSchema> = {
+  type: "serverSentEvent",
+  response: Response
+}
+
+export type HttpRoute<Request extends ZodSchema, Response extends ZodSchema> = {
+  type: "http",
   request: Request,
   response: Response
 }
 
+export function isServerSentEventRoute<Response extends ZodSchema>(route: Route<any, Response>): route is ServerSentEventRoute<Response> {
+  return route.type === "serverSentEvent";
+}
+
+export function isHttpRoute<Request extends ZodSchema, Response extends ZodSchema>(route: Route<Request, Response>): route is HttpRoute<Request, Response> {
+  return route.type === "http";
+}
+
+export type Route<Request extends ZodSchema, Response extends ZodSchema> =
+  | ServerSentEventRoute<Response>
+  | HttpRoute<Request, Response>
+
 export type Routes<Request extends ZodSchema, Response extends ZodSchema> = Record<string, Route<Request, Response>>
 
 export type Client<Request extends ZodSchema, Response extends ZodSchema, GenericRoutes extends Routes<Request, Response>> = {
-  [Route in keyof GenericRoutes]: (request: z.infer<GenericRoutes[Route]["request"]>, options?: RequestInit) => Promise<z.infer<GenericRoutes[Route]["response"]>>
+  [Route in keyof GenericRoutes]: GenericRoutes[Route] extends HttpRoute<Request, Response>
+    ? (request: z.infer<GenericRoutes[Route]["request"]>, options?: RequestInit) => Promise<z.infer<GenericRoutes[Route]["response"]>>
+    : (callback: (response: z.infer<GenericRoutes[Route]["response"]>) => void) => void
 }
 
 export type CreateClient<Request extends ZodSchema, Response extends ZodSchema, GenericRoutes extends Routes<Request, Response>> = (options: { server: string }) => Client<Request, Response, GenericRoutes>
 
-export type Implementation<Request extends ZodSchema, Response extends ZodSchema, GenericRoutes extends Routes<Request, Response>, GenericRoute extends keyof GenericRoutes> = (request: z.infer<GenericRoutes[GenericRoute]["request"]>) => Promise<z.infer<GenericRoutes[GenericRoute]["response"]>>
+export type HttpImplementation<Request extends ZodSchema, Response extends ZodSchema, GenericRoutes extends Routes<Request, Response>, GenericRoute extends keyof GenericRoutes> = GenericRoutes[GenericRoute] extends HttpRoute<Request, Response> ? (request: z.infer<GenericRoutes[GenericRoute]["request"]>) => Promise<z.infer<GenericRoutes[GenericRoute]["response"]>> : never
 
+export type ServerSentEventImplementation<Response extends ZodSchema> = (emit: (response: z.infer<Response>) => void) => void
 
 export type Implementations<Request extends ZodSchema, Response extends ZodSchema, GenericRoutes extends Routes<Request, Response>> = {
-  [Route in keyof GenericRoutes]: Implementation<Request, Response, GenericRoutes, Route>
+  [Route in keyof GenericRoutes]: GenericRoutes[Route] extends HttpRoute<Request, Response>
+  ? HttpImplementation<Request, Response, GenericRoutes, Route>
+  : ServerSentEventImplementation<Response>
 }
 
 export type CreateHandler<Request extends ZodSchema, Response extends ZodSchema, GenericRoutes extends Routes<Request, Response>> = (options: { clients: Array<string>, implementations: Implementations<Request, Response, GenericRoutes> }) => (request: IncomingMessage, Response: ServerResponse) => void
 
-export type CreateImplementation<Request extends ZodSchema, Response extends ZodSchema, GenericRoutes extends Routes<Request, Response>> = <GenericRoute extends keyof GenericRoutes>(options: { route: GenericRoute, implementation: Implementation<Request, Response, GenericRoutes, GenericRoute> }) => Implementation<Request, Response, GenericRoutes, GenericRoute>
+export type CreateHttpImplementation<Request extends ZodSchema, Response extends ZodSchema, GenericRoutes extends Routes<Request, Response>> = <GenericRoute extends keyof GenericRoutes>(options: { route: GenericRoute, implementation: HttpImplementation<Request, Response, GenericRoutes, GenericRoute> }) => HttpImplementation<Request, Response, GenericRoutes, GenericRoute>
+
+export type CreateServerSentEventImplementation<Request extends ZodSchema, Response extends ZodSchema, GenericRoutes extends Routes<Request, Response>> = <GenericRoute extends keyof GenericRoutes>(options: { route: GenericRoute, implementation: ServerSentEventImplementation<Response> }) => ServerSentEventImplementation<Response>
 
 export type Application<Request extends ZodSchema, Response extends ZodSchema, GenericRoutes extends Routes<Request, Response>> = {
   /**
@@ -33,7 +58,11 @@ export type Application<Request extends ZodSchema, Response extends ZodSchema, G
   /**
    * Create a concrete implementation of a route by defining what to do when reciveing a request.
    */
-  createImplementation: CreateImplementation<Request, Response, GenericRoutes>
+  createHttpImplementation: CreateHttpImplementation<Request, Response, GenericRoutes>
+  /**
+   * Create a concrete implementation of a route that should emit Server-Sent Events by defining what to do when reciveing a request.
+   */
+  createServerSentEventImplementation: CreateServerSentEventImplementation<Request, Response, GenericRoutes>
   /**
    * Create a function that will be able to parse the request, and interact with the client through the response.
    */
@@ -66,36 +95,50 @@ export const createApplication = <Request extends ZodSchema, Response extends Zo
    * Create an object that can later be used to send request to a server.
    */
   const createClient: CreateClient<Request, Response, GenericRoutes> = ({ server }) => {
-    const client: Partial<Client<Request, Response, GenericRoutes>> = {};
+    return new Proxy({} as Client<Request, Response, GenericRoutes>, {
+      get: (_, routeName: string) => {
+        const route = routes[routeName];
 
-    for (const route in routes) {
-      client[route] = async (requestData, options = {}) => {
-        const requestSchema = routes[route].request;
-        const responseSchema = routes[route].response;
+        if (isHttpRoute(route)) {
+          return async (requestData: unknown) => {
+            const requestSchema = route.request;
+            const responseSchema = route.response;
 
-        const parsedRequest = requestSchema.parse(requestData);
+            const parsedRequest = requestSchema.parse(requestData);
 
-        const response = await fetch(`${server}/${route}`, {
-          ...options,
-          method: "POST",
-          headers: {
-            ...options.headers,
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          },
-          body: JSON.stringify(parsedRequest),
-        });
+            const response = await fetch(`${server}/${routeName}`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+              },
+              body: JSON.stringify(parsedRequest),
+            });
 
-        if (!response.ok) {
-          const text = await response.text();
-          throw new Error(text);
+            if (!response.ok) {
+              const text = await response.text();
+              throw new Error(text);
+            }
+
+            const responseData = await response.json();
+            return responseSchema.parse(responseData);
+          }
+        } else {
+          return (onData: (data: z.infer<typeof route.response>) => void) => {
+            const eventSource = new EventSource(`${server}/${routeName}`);
+
+            eventSource.addEventListener("message", (event) => {
+              const data = route.response.parse(JSON.parse(event.data));
+              onData(data);
+            });
+
+            return () => {
+              eventSource.close();
+            }
+          }
         }
-
-        const responseData = await response.json();
-        return responseSchema.parse(responseData);
-      };
-    }
-    return client as Client<Request, Response, GenericRoutes>;
+      }
+    });
   };
 
 
@@ -122,7 +165,7 @@ export const createApplication = <Request extends ZodSchema, Response extends Zo
           return;
         }
 
-        if (request.method !== "POST") {
+        if (!["GET", "POST"].includes(request.method ?? "")) {
           headers.set("Content-Type", "application/json");
 
           response.writeHead(405, Object.fromEntries(headers.entries()));
@@ -131,25 +174,9 @@ export const createApplication = <Request extends ZodSchema, Response extends Zo
           return;
         }
 
-        if (request.headers["content-type"] !== "application/json") {
-          headers.set("Content-Type", "application/json");
-
-          response.writeHead(412, Object.fromEntries(headers.entries()));
-          response.end(JSON.stringify({ error: "Content-Type header is not application/json" }));
-
-          return;
-        }
-
-        if (request.headers["accept"] !== "application/json") {
-          headers.set("Content-Type", "application/json");
-
-          response.writeHead(412, Object.fromEntries(headers.entries()));
-          response.end(JSON.stringify({ error: "Accept header is not application/json" }));
-
-          return;
-        }
-
         const routePath = request.url?.slice(1);
+
+        console.log({ routePath, impl: Object.keys(implementations) });
 
         if (!routePath || !(routePath in implementations)) {
           headers.set("Content-Type", "application/json");
@@ -160,17 +187,40 @@ export const createApplication = <Request extends ZodSchema, Response extends Zo
           return;
         }
 
-        const body = await getBody(request);
-        const parsedRequest = toJsonOr(undefined, body);
-        const requestSchema = routes[routePath]["request"];
-        const validatedRequest = requestSchema.parse(parsedRequest)
-        const implementation = implementations[routePath];
-        const result = await implementation(validatedRequest);
+        const route = routes[routePath];
 
-        headers.set("Content-Type", "application/json");
+        if (isServerSentEventRoute(route)) {
+          const implementation = implementations[routePath];
 
-        response.writeHead(200, Object.fromEntries(headers.entries()));
-        response.end(JSON.stringify(result));
+          headers.set("Content-Type", "text/event-stream");
+          headers.set("Cache-Control", "no-cache");
+          headers.set("Connection", "keep-alive");
+          response.writeHead(200, Object.fromEntries(headers.entries()));
+
+          implementation((unvalidatedResponse: unknown) => {
+            const validatedResponse = route.response.parse(unvalidatedResponse)
+
+            response.write(`event: message\ndata: ${JSON.stringify(validatedResponse)}\n\n`);
+          });
+
+          return;
+        }
+
+        if (isHttpRoute(route)) {
+          const body = await getBody(request);
+          const parsedRequest = toJsonOr(undefined, body);
+          const requestSchema = route.request
+          const validatedRequest = requestSchema.parse(parsedRequest)
+          const implementation = implementations[routePath] as HttpImplementation<Request, Response, GenericRoutes, keyof GenericRoutes>;
+          const result = await implementation(validatedRequest);
+
+          headers.set("Content-Type", "application/json");
+          response.writeHead(200, Object.fromEntries(headers.entries()));
+          response.end(JSON.stringify(result));
+          return;
+        }
+
+        throw new Error("Bad route type, should be either serventSentEvent or http.");
       } catch (error) {
         headers.set("Content-Type", "application/json");
 
@@ -184,21 +234,35 @@ export const createApplication = <Request extends ZodSchema, Response extends Zo
     };
   };
 
-  const createImplementation = <GenericRoute extends keyof GenericRoutes>({ implementation }: { route: GenericRoute, implementation: Implementation<Request, Response, GenericRoutes, GenericRoute> }): Implementation<Request, Response, GenericRoutes, GenericRoute> => {
+  const createHttpImplementation = <GenericRoute extends keyof GenericRoutes>({ implementation }: { route: GenericRoute, implementation: HttpImplementation<Request, Response, GenericRoutes, GenericRoute> }): HttpImplementation<Request, Response, GenericRoutes, GenericRoute> => {
+    return implementation;
+  };
+
+  const createServerSentEventImplementation = <GenericRoute extends keyof GenericRoutes>({ implementation }: { route: GenericRoute, implementation: ServerSentEventImplementation<Response> }): ServerSentEventImplementation<Response> => {
     return implementation;
   };
 
   return {
     createClient,
-    createImplementation,
+    createHttpImplementation,
+    createServerSentEventImplementation,
     createHandler
   };
 }
 
-export const createRoute = <Request extends ZodSchema, Response extends ZodSchema>({ request, response }: { request: Request, response: Response }): Route<Request, Response> => {
+export const createHttpRoute = <Request extends ZodSchema, Response extends ZodSchema>({ request, response }: { request: Request, response: Response }): HttpRoute<Request, Response> => {
   return {
+    type: "http",
     request,
     response
   }
 }
+
+export const createServerSentEventRoute = <Response extends ZodSchema>({ response }: { response: Response }): ServerSentEventRoute<Response> => {
+  return {
+    type: "serverSentEvent",
+    response
+  }
+}
+
 export * from "zod";
