@@ -39,61 +39,47 @@ With `superblue`, error handling becomes more manageable, consistent, and secure
 
 ### Create an HTTP route
 
-```ts
+```typescript
 import { createApplication, createHttpRoute, z } from "@superblue/core";
 import { createServer } from "http";
 
-const createUserRoute = createHttpRoute({
-    request: z.object({
-      firstname: z.string()
-    }),
-    response: z.discriminatedUnion("success", [
-      z.object({
-        success: z.literal(true),
-        message: z.string()
-      }),
-      z.object({
-        success: z.literal(false),
-        error: z.string()
-      })
-    ])
-  })
+// ROUTE
 
-const {
-  createClient,
-  createHandler,
-  createHttpImplementation
-} = createApplication({
+const createUserRoute = createHttpRoute({
+  request: z.object({
+    email: z.string(),
+    password: z.string()
+  }),
+  response: z.object({
+    identifier: z.string()
+  })
+});
+
+// APPLICATION
+
+const { createHttpImplementation, createHandler, createClient } = createApplication({
   createUser: createUserRoute
 });
 
+// IMPLEMENTATION
+
 const createUserImplementation = createHttpImplementation({
   route: "createUser",
-  implementation: async ({ firstname }) => {
-    if (Math.random() > 0.5) {
-      return {
-        success: false,
-        error: `Random error when creating ${firstname}`
-      };
-    }
-
-    // ...
-
+  implementation: async ({ email, password }) => {
     return {
-      success: true,
-      message: `Created ${firstname}`
+      identifier: Buffer.from(`${email}:${password}`).toString("base64")
     }
   }
 });
 
-const client = createClient({ server: "http://localhost:8000" });
+// SERVER
 
 const handler = createHandler({
   clients: ["http://localhost:8000"],
   implementations: {
     createUser: createUserImplementation
   }
-})
+});
 
 const server = createServer(handler);
 
@@ -101,17 +87,18 @@ server.listen(8000, "0.0.0.0", () => {
   console.log("Server listening on http://localhost:8000");
 });
 
+// CLIENT
+
+const client = createClient({
+  server: "http://localhost:8000"
+});
+
 const response = await client.createUser({
-  firstname: "John DOE"
-})
+  email: "john@doe.com",
+  password: "supersecret"
+});
 
-if (response.success) {
-  console.log(response.message);
-} else {
-  console.error(response.error);
-}
-
-server.close();
+console.log(`User created with id ${response.identifier}`);
 ```
 
 ### Create a Server Sent Event route
