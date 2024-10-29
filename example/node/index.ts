@@ -2,12 +2,14 @@ import { createHandler } from "@superblue/example-core";
 import { createServer } from "http";
 import { createUserImplementation } from "./implementations/createUser";
 import { getUsersImplementation } from "./implementations/getUsers";
+import { userCreatedImplementation } from "./implementations/userCreated";
 
 const handler = createHandler({
   clients: ["http://localhost:5173"],
   implementations: {
     createUser: createUserImplementation,
-    getUsers: getUsersImplementation
+    getUsers: getUsersImplementation,
+    userCreated: userCreatedImplementation
   }
 })
 
