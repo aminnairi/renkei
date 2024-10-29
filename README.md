@@ -37,11 +37,13 @@ With `superblue`, error handling becomes more manageable, consistent, and secure
 
 ## Usage
 
+### Create an HTTP route
+
 ```ts
-import { createApplication, createRoute, z } from "@superblue/core";
+import { createApplication, createHttpRoute, z } from "@superblue/core";
 import { createServer } from "http";
 
-const createUserRoute = createRoute({
+const createUserRoute = createHttpRoute({
     request: z.object({
       firstname: z.string()
     }),
@@ -60,12 +62,12 @@ const createUserRoute = createRoute({
 const {
   createClient,
   createHandler,
-  createImplementation
+  createHttpImplementation
 } = createApplication({
   createUser: createUserRoute
 });
 
-const createUserImplementation = createImplementation({
+const createUserImplementation = createHttpImplementation({
   route: "createUser",
   implementation: async ({ firstname }) => {
     if (Math.random() > 0.5) {
