@@ -6,6 +6,9 @@
 - Add the possibility to use adapters when initializing the client
 - Add the possibility to use adapters when initializing the server
 - Allow accessing bits of the request from the implementations
+- Rename `handler` to `requestListener`
+- Use the `RequestListener` type instead of hardcoding the `IncomingMessage` and `ServerResponse`
+- Rename `emit` to `send`
 
 ## @superblue/client
 
