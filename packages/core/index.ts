@@ -18,18 +18,18 @@ export type Route<GenericRequest extends ZodSchema, GenericResponse extends ZodS
 
 export type Routes<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema> = Record<string, Route<GenericRequest, GenericResponse>>
 
-export type ClientHttpRequest<GenericResponse extends ZodSchema> = () => Promise<z.infer<GenericResponse>>
+export type ClientHttpRequest<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema> = (data: z.infer<GenericRequest>) => Promise<z.infer<GenericResponse>>
 
 export type ClientHttpCancelFunction = () => void
 
-export interface ClientHttpRouteOutput<GenericResponse extends ZodSchema> {
-  request: ClientHttpRequest<GenericResponse>,
+export interface ClientHttpRouteOutput<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema> {
+  request: ClientHttpRequest<GenericRequest, GenericResponse>,
   cancel: ClientHttpCancelFunction
 }
 
 export type HttpClientRoute<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema, GenericRoutes extends Routes<GenericRequest, GenericResponse>, GenericRouteName extends keyof GenericRoutes> = 
   GenericRoutes[GenericRouteName] extends HttpRoute<GenericRequest, GenericResponse>
-  ? (request: z.infer<GenericRoutes[GenericRouteName]["request"]>, options?: RequestInit) => ClientHttpRouteOutput<GenericRoutes[GenericRouteName]["response"]>
+  ? () => ClientHttpRouteOutput<GenericRoutes[GenericRouteName]["request"], GenericRoutes[GenericRouteName]["response"]>
   : never
 
 export type EventClientCancelFunction = () => void
@@ -145,7 +145,7 @@ export const createApplication = <GenericRequest extends ZodSchema, GenericRespo
         if (isHttpRoute(route)) {
           const abortController = new AbortController();
 
-          return {
+          return () => ({
             request: async (requestData: unknown) => {
               const requestSchema = route.request;
               const responseSchema = route.response;
@@ -173,7 +173,7 @@ export const createApplication = <GenericRequest extends ZodSchema, GenericRespo
             cancel: () => {
               abortController.abort();
             }
-          };
+          });
         }
         
         if (isEventRoute(route)) {
