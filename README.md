@@ -93,10 +93,14 @@ const client = createClient({
   server: "http://localhost:8000"
 });
 
-const response = await client.createUser({
+const { request, cancel } = client.createUser({
   email: "john@doe.com",
   password: "supersecret"
 });
+
+setTimeout(cancel, 5_000);
+
+const response = await request();
 
 console.log(`User created with id ${response.identifier}`);
 ```
@@ -161,9 +165,11 @@ const client = createClient({
   server: "http://localhost:8000"
 });
 
-client.timeSent(({ hours, minutes }) => {
+const stopListening = client.timeSent(({ hours, minutes }) => {
   console.log(`Its ${hours}:${minutes}`);
 });
+
+setTimeout(stopListening, 5_000);
 ```
 
 ## Packages
