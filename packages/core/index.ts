@@ -223,9 +223,7 @@ export const createApplication = <GenericRequest extends ZodSchema, GenericRespo
           response.writeHead(405, Object.fromEntries(headers.entries()));
           response.end(JSON.stringify({ error: "Method Not Allowed" }));
 
-          return;/**
-          * The definition of a route that should be implemented as a Server-Sent Event.
-          */
+          return;
         }
 
         const routePath = request.url?.slice(1);
