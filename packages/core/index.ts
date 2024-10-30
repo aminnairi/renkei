@@ -26,21 +26,21 @@ export type Route<GenericRequest extends ZodSchema, GenericResponse extends ZodS
 
 export type Routes<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema> = Record<string, Route<GenericRequest, GenericResponse>>
 
-export type HttpClientRoute<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema, GenericRoutes extends Routes<GenericRequest, GenericResponse>, GenericRouteName extends keyof GenericRoutes> = 
+export type ClientHttpRoute<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema, GenericRoutes extends Routes<GenericRequest, GenericResponse>, GenericRouteName extends keyof GenericRoutes> = 
   GenericRoutes[GenericRouteName] extends HttpRoute<GenericRequest, GenericResponse>
   ? (request: z.infer<GenericRoutes[GenericRouteName]["request"]>, options?: RequestInit) => Promise<z.infer<GenericRoutes[GenericRouteName]["response"]>>
   : never
 
 export type EventClientRoute<GenericResponse extends ZodSchema, GenericRoutes extends Routes<any, GenericResponse>, GenericRouteName extends keyof GenericRoutes> =
   GenericRoutes[GenericRouteName] extends EventRoute<GenericResponse>
-  ? (callback: (response: z.infer<GenericRoutes[GenericRouteName]["response"]>) => void) => void
+  ? (callback: (response: z.infer<GenericRoutes[GenericRouteName]["response"]>) => void) => ClientEventCancelFunction
   : never
 
 export type Client<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema, GenericRoutes extends Routes<GenericRequest, GenericResponse>> = {
   [RouteName in keyof GenericRoutes]:
     GenericRoutes[RouteName] extends HttpRoute<GenericRequest, GenericResponse>
-    ? HttpClientRoute<GenericRequest, GenericResponse, GenericRoutes, RouteName>
-    : EventClientRoute<GenericResponse, GenericRoutes, RouteName>
+    ? ClientHttpRoute<GenericRequest, GenericResponse, GenericRoutes, RouteName>
+    : ClientEventRoute<GenericResponse, GenericRoutes, RouteName>
 }
 
 export type CreateClient<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema, GenericRoutes extends Routes<GenericRequest, GenericResponse>> = (options: { server: string }) => Client<GenericRequest, GenericResponse, GenericRoutes>
