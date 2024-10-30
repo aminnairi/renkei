@@ -143,37 +143,39 @@ export const createApplication = <GenericRequest extends ZodSchema, GenericRespo
         }
 
         if (isHttpRoute(route)) {
-          const abortController = new AbortController();
+          return () => {
+            const abortController = new AbortController();
 
-          return () => ({
-            request: async (requestData: unknown) => {
-              const requestSchema = route.request;
-              const responseSchema = route.response;
+            return {
+              request: async (requestData: unknown) => {
+                const requestSchema = route.request;
+                const responseSchema = route.response;
 
-              const parsedRequest = requestSchema.parse(requestData);
+                const parsedRequest = requestSchema.parse(requestData);
 
-              const response = await fetch(`${server}/${routeName}`, {
-                method: "POST",
-                signal: abortController.signal,
-                headers: {
-                  "Content-Type": "application/json",
-                  "Accept": "application/json"
-                },
-                body: JSON.stringify(parsedRequest),
-              });
+                const response = await fetch(`${server}/${routeName}`, {
+                  method: "POST",
+                  signal: abortController.signal,
+                  headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                  },
+                  body: JSON.stringify(parsedRequest),
+                });
 
-              if (!response.ok) {
-                const text = await response.text();
-                throw new Error(text);
+                if (!response.ok) {
+                  const text = await response.text();
+                  throw new Error(text);
+                }
+
+                const responseData = await response.json();
+                return responseSchema.parse(responseData);
+              },
+              cancel: () => {
+                abortController.abort();
               }
-
-              const responseData = await response.json();
-              return responseSchema.parse(responseData);
-            },
-            cancel: () => {
-              abortController.abort();
-            }
-          });
+            };
+          };
         }
         
         if (isEventRoute(route)) {
