@@ -2,38 +2,44 @@ import { createHttpImplementation } from "@superblue/example-core";
 import { randomUUID } from "crypto";
 import { users } from "../state/users";
 import { userCreatedEvent } from "../events/userCreatedEvent";
+import { limiter } from "../limiter";
 
 export const createUserImplementation = createHttpImplementation({
   route: "createUser",
-  implementation: async ({ firstname, lastname }) => {
+  implementation: async ({ firstname, lastname }, { headers: { origin } }) => {
+    const { allowed, retryAfter } = limiter(origin ?? "http://unknown");
+
+    if (!allowed) {
+      return {
+        status: "LIMITED",
+        retryAfter: retryAfter ?? 0
+      };
+    }
+
     const trimmedFirstname = firstname.trim();
     const trimmedLastname = lastname.trim();
 
     if (trimmedFirstname.length === 0) {
       return {
-        success: false,
-        error: "FIRSTNAME_EMPTY"
+        status: "FIRSTNAME_EMPTY"
       };
     }
 
     if (trimmedLastname.length === 0) {
       return {
-        success: false,
-        error: "LASTNAME_EMPTY"
+        status: "LASTNAME_EMPTY"
       };
     }
 
     if (trimmedFirstname.length > 50) {
       return {
-        success: false,
-        error: "FIRSTNAME_TOO_LONG"
+        status: "FIRSTNAME_TOO_LONG"
       };
     }
 
     if (trimmedLastname.length > 50) {
       return {
-        success: false,
-        error: "LASTNAME_TOO_LONG"
+        status: "LASTNAME_TOO_LONG"
       };
     }
 
@@ -43,8 +49,7 @@ export const createUserImplementation = createHttpImplementation({
 
     if (alreadyExistingUser) {
       return {
-        success: false,
-        error: "USER_ALREADY_EXISTS"
+        status: "USER_ALREADY_EXISTS"
       };
     }
 
@@ -59,7 +64,7 @@ export const createUserImplementation = createHttpImplementation({
     userCreatedEvent.emit("user", user);
 
     return {
-      success: true,
+      status: "SUCCESS",
       message: `Created ${firstname}`
     }
   }
