@@ -14,3 +14,9 @@
 ## @superblue/example-vue
 
 - Add an example for Vue.js
+
+## @superblue/limiter
+
+- Add a way to provide an adapter for the storage
+- Add a default in memory storage
+- Enhance date handling
