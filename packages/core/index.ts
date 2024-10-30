@@ -31,7 +31,9 @@ export type ClientHttpRoute<GenericRequest extends ZodSchema, GenericResponse ex
   ? (request: z.infer<GenericRoutes[GenericRouteName]["request"]>, options?: RequestInit) => Promise<z.infer<GenericRoutes[GenericRouteName]["response"]>>
   : never
 
-export type EventClientRoute<GenericResponse extends ZodSchema, GenericRoutes extends Routes<any, GenericResponse>, GenericRouteName extends keyof GenericRoutes> =
+export type ClientEventCancelFunction = () => void
+
+export type ClientEventRoute<GenericResponse extends ZodSchema, GenericRoutes extends Routes<any, GenericResponse>, GenericRouteName extends keyof GenericRoutes> =
   GenericRoutes[GenericRouteName] extends EventRoute<GenericResponse>
   ? (callback: (response: z.infer<GenericRoutes[GenericRouteName]["response"]>) => void) => ClientEventCancelFunction
   : never
