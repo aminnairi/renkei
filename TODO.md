@@ -6,9 +6,12 @@
 - Add the possibility to use adapters when initializing the client
 - Add the possibility to use adapters when initializing the server
 - Allow accessing bits of the request from the implementations
-- Rename `handler` to `requestListener`
-- Use the `RequestListener` type instead of hardcoding the `IncomingMessage` and `ServerResponse`
-- Rename `emit` to `send`
+- Add a way to close the event source from the client for event route
+- Add a way to close the response stream from the server for event route
+
+## @superblue/example-react
+
+- Add a notification when creating a new user via the client event route
 
 ## @superblue/client
 
