@@ -3,7 +3,6 @@ import { Users } from '@superblue/example-core/routes/getUsers';
 import { client } from "../superblue/client";
 import { exhaustive } from "exhaustive";
 
-
 export const useUser = () => {
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
