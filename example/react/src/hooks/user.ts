@@ -2,8 +2,11 @@ import { ChangeEventHandler, FormEventHandler, useCallback, useEffect, useMemo, 
 import { Users } from '@superblue/example-core/routes/getUsers';
 import { client } from "../superblue/client";
 import { exhaustive } from "exhaustive";
+import { useNotification } from './notification';
 
 export const useUser = () => {
+  const { sendNotification } = useNotification();
+
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [users, setUsers] = useState<Users>([]);
@@ -97,13 +100,17 @@ export const useUser = () => {
 
   useEffect(() => {
     const stopListeningForUserCreatedEvents = client.userCreated((user) => {
-      console.log(`Received a user: ${user.firstname} ${user.lastname}`);
+      sendNotification({
+        message: `Received a user: ${user.firstname} ${user.lastname}`,
+        severity: "success",
+        duration: 5000
+      });
     });
 
     return () => {
       stopListeningForUserCreatedEvents();
     }
-  }, []);
+  }, [sendNotification]);
 
   return {
     lastname,
