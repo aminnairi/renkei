@@ -12,14 +12,6 @@ export interface HttpRoute<GenericRequest extends ZodSchema, GenericResponse ext
   response: GenericResponse
 }
 
-export function isEventRoute<GenericResponse extends ZodSchema>(route: Route<any, GenericResponse>): route is EventRoute<GenericResponse> {
-  return route.type === "event";
-}
-
-export function isHttpRoute<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema>(route: Route<GenericRequest, GenericResponse>): route is HttpRoute<GenericRequest, GenericResponse> {
-  return route.type === "http";
-}
-
 export type Route<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema> =
   | EventRoute<GenericResponse>
   | HttpRoute<GenericRequest, GenericResponse>
@@ -128,6 +120,14 @@ export const toJsonOr = <Fallback>(fallback: Fallback, input: string): unknown =
     return fallback;
   }
 };
+
+export function isEventRoute<GenericResponse extends ZodSchema>(route: Route<any, GenericResponse>): route is EventRoute<GenericResponse> {
+  return route.type === "event";
+}
+
+export function isHttpRoute<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema>(route: Route<GenericRequest, GenericResponse>): route is HttpRoute<GenericRequest, GenericResponse> {
+  return route.type === "http";
+}
 
 /**
  * Create a new application for communicating seamlessly between a client and a server.
