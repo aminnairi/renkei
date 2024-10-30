@@ -57,7 +57,7 @@ const createUserRoute = createHttpRoute({
 
 // APPLICATION
 
-const { createHttpImplementation, createHandler, createClient } = createApplication({
+const { createHttpImplementation, createRequestListener, createClient } = createApplication({
   createUser: createUserRoute
 });
 
@@ -74,14 +74,14 @@ const createUserImplementation = createHttpImplementation({
 
 // SERVER
 
-const handler = createHandler({
+const requestListener = createRequestListener({
   clients: ["http://localhost:8000"],
   implementations: {
     createUser: createUserImplementation
   }
 });
 
-const server = createServer(handler);
+const server = createServer(requestListener);
 
 server.listen(8000, "0.0.0.0", () => {
   console.log("Server listening on http://localhost:8000");
@@ -104,12 +104,12 @@ console.log(`User created with id ${response.identifier}`);
 ### Create a Server Sent Event route
 
 ```typescript
-import { createApplication, createServerSentEventRoute, z } from "@superblue/core"
+import { createApplication, createEventRoute, z } from "@superblue/core"
 import { createServer } from "http";
 
 // ROUTE
 
-const timeSentRoute = createServerSentEventRoute({
+const timeSentRoute = createEventRoute({
   response: z.object({
     hours: z.number(),
     minutes: z.number()
@@ -118,13 +118,13 @@ const timeSentRoute = createServerSentEventRoute({
 
 // APPLICATION
 
-const { createClient, createHandler, createServerSentEventImplementation } = createApplication({
+const { createClient, createRequestListener, createEventImplementation } = createApplication({
   timeSent: timeSentRoute
 });
 
 // IMPLEMENTATION
 
-const timeSentImplementation = createServerSentEventImplementation({
+const timeSentImplementation = createEventImplementation({
   route: "timeSent",
   implementation: (emit) => {
     setInterval(() => {
@@ -142,14 +142,14 @@ const timeSentImplementation = createServerSentEventImplementation({
 
 // SERVER
 
-const handler = createHandler({
+const requestListener = createRequestListener({
   clients: ["http://localhost:8000"],
   implementations: {
     timeSent: timeSentImplementation
   }
 });
 
-const server = createServer(handler);
+const server = createServer(requestListener);
 
 server.listen(8000, "0.0.0.0", () => {
   console.log("Server listening on http://localhost:8000");
@@ -163,11 +163,6 @@ const client = createClient({
 
 client.timeSent(({ hours, minutes }) => {
   console.log(`Its ${hours}:${minutes}`);
-});
-
-
-client.timeSent(({ minutes, hours }) => {
-  console.log(`It is ${hours}:${minutes}`);
 });
 ```
 
