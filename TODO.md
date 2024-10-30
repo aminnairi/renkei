@@ -6,10 +6,6 @@
 - Add more rules for eslint
 - Run eslint on push
 
-## @superblue/example-react
-
-- Add a notification when creating a new user via the client event route
-
 ## @superblue/server
 
 - Add an adapter for using `http`
