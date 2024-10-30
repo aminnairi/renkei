@@ -26,23 +26,23 @@ export type Route<GenericRequest extends ZodSchema, GenericResponse extends ZodS
 
 export type Routes<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema> = Record<string, Route<GenericRequest, GenericResponse>>
 
-export type ClientHttpRoute<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema, GenericRoutes extends Routes<GenericRequest, GenericResponse>, GenericRouteName extends keyof GenericRoutes> = 
+export type HttpClientRoute<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema, GenericRoutes extends Routes<GenericRequest, GenericResponse>, GenericRouteName extends keyof GenericRoutes> = 
   GenericRoutes[GenericRouteName] extends HttpRoute<GenericRequest, GenericResponse>
   ? (request: z.infer<GenericRoutes[GenericRouteName]["request"]>, options?: RequestInit) => Promise<z.infer<GenericRoutes[GenericRouteName]["response"]>>
   : never
 
-export type ClientEventCancelFunction = () => void
+export type EventClientCancelFunction = () => void
 
-export type ClientEventRoute<GenericResponse extends ZodSchema, GenericRoutes extends Routes<any, GenericResponse>, GenericRouteName extends keyof GenericRoutes> =
+export type EventClientRoute<GenericResponse extends ZodSchema, GenericRoutes extends Routes<any, GenericResponse>, GenericRouteName extends keyof GenericRoutes> =
   GenericRoutes[GenericRouteName] extends EventRoute<GenericResponse>
-  ? (callback: (response: z.infer<GenericRoutes[GenericRouteName]["response"]>) => void) => ClientEventCancelFunction
+  ? (callback: (response: z.infer<GenericRoutes[GenericRouteName]["response"]>) => void) => EventClientCancelFunction
   : never
 
 export type Client<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema, GenericRoutes extends Routes<GenericRequest, GenericResponse>> = {
   [RouteName in keyof GenericRoutes]:
     GenericRoutes[RouteName] extends HttpRoute<GenericRequest, GenericResponse>
-    ? ClientHttpRoute<GenericRequest, GenericResponse, GenericRoutes, RouteName>
-    : ClientEventRoute<GenericResponse, GenericRoutes, RouteName>
+    ? HttpClientRoute<GenericRequest, GenericResponse, GenericRoutes, RouteName>
+    : EventClientRoute<GenericResponse, GenericRoutes, RouteName>
 }
 
 export type CreateClient<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema, GenericRoutes extends Routes<GenericRequest, GenericResponse>> = (options: { server: string }) => Client<GenericRequest, GenericResponse, GenericRoutes>
@@ -78,23 +78,26 @@ export type CreateEventImplementation<GenericRequest extends ZodSchema, GenericR
 
 export type Application<Request extends ZodSchema, Response extends ZodSchema, GenericRoutes extends Routes<Request, Response>> = {
   /**
-   * Create an object that can be used to call routes, in order to receive data and perform actions from the server.
+   * Create an object that can later be used to send request to a server.
    */
   createClient: CreateClient<Request, Response, GenericRoutes>,
   /**
-   * Create a concrete implementation of a route by defining what to do when reciveing a request.
+   * Create an implementation of a route that should return an http response.
    */
   createHttpImplementation: CreateHttpImplementation<Request, Response, GenericRoutes>
   /**
-   * Create a concrete implementation of a route that should emit Server-Sent Events by defining what to do when reciveing a request.
+   * Create an implementation of a route that should return a Server-Sent Event response.
    */
   createEventImplementation: CreateEventImplementation<Request, Response, GenericRoutes>
   /**
-   * Create a function that will be able to parse the request, and interact with the client through the response.
+   * Create a function that will be able to parse the request, and send response according to concrete implementation of your routes defined earlier.
    */
   createRequestListener: CreateRequestListener<Request, Response, GenericRoutes>
 }
 
+/**
+ * Reassemble the body from the request's stream in the form of a raw string.
+ */
 export const getBody = async (request: IncomingMessage) => {
   let body = "";
 
@@ -105,6 +108,9 @@ export const getBody = async (request: IncomingMessage) => {
   return body;
 };
 
+/**
+ * Serialize a JSON-compatible JavaScript object, or use the provided fallback value if it ever fails to serialize the object.
+ */
 export const toJsonOr = <Fallback>(fallback: Fallback, input: string): unknown => {
   try {
     return JSON.parse(input);
@@ -117,9 +123,6 @@ export const toJsonOr = <Fallback>(fallback: Fallback, input: string): unknown =
  * Create a new application for communicating seamlessly between a client and a server.
  */
 export const createApplication = <GenericRequest extends ZodSchema, GenericResponse extends ZodSchema, GenericRoutes extends Routes<GenericRequest, GenericResponse>>(routes: GenericRoutes): Application<GenericRequest, GenericResponse, GenericRoutes> => {
-  /**
-   * Create an object that can later be used to send request to a server.
-   */
   const createClient: CreateClient<GenericRequest, GenericResponse, GenericRoutes> = ({ server }) => {
     return new Proxy({} as Client<GenericRequest, GenericResponse, GenericRoutes>, {
       get: (_, routeName: string) => {
@@ -176,9 +179,6 @@ export const createApplication = <GenericRequest extends ZodSchema, GenericRespo
   };
 
 
-  /**
-   * Create a function that will be able to parse the request, and send response according to concrete implementation of your routes defined earlier.
-   */
   const createRequestListener: CreateRequestListener<GenericRequest, GenericResponse, GenericRoutes> = ({ clients, implementations }) => {
     return async (request: IncomingMessage, response: ServerResponse) => {
       const headers = new Map();
@@ -205,12 +205,12 @@ export const createApplication = <GenericRequest extends ZodSchema, GenericRespo
           response.writeHead(405, Object.fromEntries(headers.entries()));
           response.end(JSON.stringify({ error: "Method Not Allowed" }));
 
-          return;
+          return;/**
+          * The definition of a route that should be implemented as a Server-Sent Event.
+          */
         }
 
         const routePath = request.url?.slice(1);
-
-        console.log({ routePath, impl: Object.keys(implementations) });
 
         if (!routePath || !(routePath in implementations)) {
           headers.set("Content-Type", "application/json");
@@ -292,6 +292,9 @@ export const createApplication = <GenericRequest extends ZodSchema, GenericRespo
   };
 }
 
+/**
+ * Create a route that accept requests, and sends responses.
+ */
 export const createHttpRoute = <GenericRequest extends ZodSchema, GenericResponse extends ZodSchema>({ request, response }: { request: GenericRequest, response: GenericResponse }): HttpRoute<GenericRequest, GenericResponse> => {
   return {
     type: "http",
@@ -300,6 +303,9 @@ export const createHttpRoute = <GenericRequest extends ZodSchema, GenericRespons
   }
 }
 
+/**
+ * Create a route that sends Server-Sent Events (SSE).
+ */
 export const createEventRoute = <Response extends ZodSchema>({ response }: { response: Response }): EventRoute<Response> => {
   return {
     type: "event",
