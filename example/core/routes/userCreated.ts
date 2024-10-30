@@ -1,6 +1,6 @@
-import { createServerSentEventRoute, z } from "@superblue/core";
+import { createEventRoute, z } from "@superblue/core";
 
-export const userCreatedRoute = createServerSentEventRoute({
+export const userCreatedRoute = createEventRoute({
   response: z.object({
     identifier: z.string(),
     firstname: z.string(),
