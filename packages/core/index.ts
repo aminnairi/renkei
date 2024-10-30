@@ -1,12 +1,12 @@
 import { IncomingMessage, RequestListener, ServerResponse } from "http";
 import { z, ZodSchema } from "zod";
 
-export type EventRoute<GenericResponse extends ZodSchema> = {
+export interface EventRoute<GenericResponse extends ZodSchema> {
   type: "event",
   response: GenericResponse
 }
 
-export type HttpRoute<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema> = {
+export interface HttpRoute<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema> {
   type: "http",
   request: GenericRequest,
   response: GenericResponse
@@ -64,7 +64,8 @@ export type Implementations<GenericRequest extends ZodSchema, GenericResponse ex
   : EventImplementation<GenericResponse, GenericRoutes, RouteName>
 }
 
-export type CreateRequestListener<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema, GenericRoutes extends Routes<GenericRequest, GenericResponse>> = (options: { clients: Array<string>, implementations: Implementations<GenericRequest, GenericResponse, GenericRoutes> }) => RequestListener
+export type CreateRequestListener<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema, GenericRoutes extends Routes<GenericRequest, GenericResponse>> = (options: { clients: string[], implementations: Implementations<GenericRequest, GenericResponse, GenericRoutes> }) => RequestListener
+
 
 export type CreateHttpImplementation<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema, GenericRoutes extends Routes<GenericRequest, GenericResponse>> = <GenericRouteName extends keyof GenericRoutes>(options: { route: GenericRouteName, implementation: GenericRoutes[GenericRouteName] extends HttpRoute<GenericRequest, GenericResponse> ? HttpImplementation<GenericRequest, GenericResponse, GenericRoutes, GenericRouteName> : never }) => 
     GenericRoutes[GenericRouteName] extends HttpRoute<GenericRequest, GenericResponse>
@@ -76,7 +77,7 @@ export type CreateEventImplementation<GenericRequest extends ZodSchema, GenericR
   ? EventImplementation<GenericRoute["response"], GenericRoutes, GenericRouteName>
   : never
 
-export type Application<Request extends ZodSchema, Response extends ZodSchema, GenericRoutes extends Routes<Request, Response>> = {
+export interface Application<Request extends ZodSchema, Response extends ZodSchema, GenericRoutes extends Routes<Request, Response>> {
   /**
    * Create an object that can later be used to send request to a server.
    */
