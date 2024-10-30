@@ -50,12 +50,12 @@ export type CreateClient<GenericRequest extends ZodSchema, GenericResponse exten
 
 export type HttpImplementation<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema, GenericRoutes extends Routes<GenericRequest, GenericResponse>, GenericRouteName extends keyof GenericRoutes> =
   GenericRoutes[GenericRouteName] extends HttpRoute<GenericRequest, GenericResponse>
-  ? (request: z.infer<GenericRoutes[GenericRouteName]["request"]>) => Promise<z.infer<GenericRoutes[GenericRouteName]["response"]>>
+  ? (input: z.infer<GenericRoutes[GenericRouteName]["request"]>, request: IncomingMessage) => Promise<z.infer<GenericRoutes[GenericRouteName]["response"]>>
   : never
 
 export type EventImplementation<GenericResponse extends ZodSchema, GenericRoutes extends Routes<any, GenericResponse>, GenericRouteName extends keyof GenericRoutes> =
   GenericRoutes[GenericRouteName] extends EventRoute<GenericResponse> 
-  ? (send: (response: z.infer<GenericResponse>) => void) => void
+  ? (send: (response: z.infer<GenericResponse>) => void, request: IncomingMessage) => void
   : never
 
 export type Implementations<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema, GenericRoutes extends Routes<GenericRequest, GenericResponse>> = {
@@ -261,7 +261,7 @@ export const createApplication = <GenericRequest extends ZodSchema, GenericRespo
             const validatedResponse = route.response.parse(unvalidatedResponse);
 
             response.write(`event: message\ndata: ${JSON.stringify(validatedResponse)}\n\n`);
-          });
+          }, request);
 
           return;
         }
@@ -277,7 +277,7 @@ export const createApplication = <GenericRequest extends ZodSchema, GenericRespo
             throw new Error(`Implementation not found for path ${routePath}`);
           }
 
-          const result = await implementation(validatedRequest);
+          const result = await implementation(validatedRequest, request);
 
           headers.set("Content-Type", "application/json");
           response.writeHead(200, Object.fromEntries(headers.entries()));
