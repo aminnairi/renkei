@@ -177,6 +177,7 @@ setTimeout(stopListening, 5_000);
 Package | Description
 ---|---
 [`@superblue/core`](./packages/core) | Effortless type-safe communication between client and server
+[`@superblue/limiter`](./packages/limiter) | Rate limiter for back-end applications
 
 ## Example
 
