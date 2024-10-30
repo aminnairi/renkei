@@ -26,9 +26,18 @@ export type Route<GenericRequest extends ZodSchema, GenericResponse extends ZodS
 
 export type Routes<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema> = Record<string, Route<GenericRequest, GenericResponse>>
 
+export type ClientHttpRequest<GenericResponse extends ZodSchema> = () => Promise<z.infer<GenericResponse>>
+
+export type ClientHttpCancelFunction = () => void
+
+export interface ClientHttpRouteOutput<GenericResponse extends ZodSchema> {
+  request: ClientHttpRequest<GenericResponse>,
+  cancel: ClientHttpCancelFunction
+}
+
 export type HttpClientRoute<GenericRequest extends ZodSchema, GenericResponse extends ZodSchema, GenericRoutes extends Routes<GenericRequest, GenericResponse>, GenericRouteName extends keyof GenericRoutes> = 
   GenericRoutes[GenericRouteName] extends HttpRoute<GenericRequest, GenericResponse>
-  ? (request: z.infer<GenericRoutes[GenericRouteName]["request"]>, options?: RequestInit) => Promise<z.infer<GenericRoutes[GenericRouteName]["response"]>>
+  ? (request: z.infer<GenericRoutes[GenericRouteName]["request"]>, options?: RequestInit) => ClientHttpRouteOutput<GenericRoutes[GenericRouteName]["response"]>
   : never
 
 export type EventClientCancelFunction = () => void
@@ -134,28 +143,36 @@ export const createApplication = <GenericRequest extends ZodSchema, GenericRespo
         }
 
         if (isHttpRoute(route)) {
-          return async (requestData: unknown) => {
-            const requestSchema = route.request;
-            const responseSchema = route.response;
+          const abortController = new AbortController();
 
-            const parsedRequest = requestSchema.parse(requestData);
+          return {
+            request: async (requestData: unknown) => {
+              const requestSchema = route.request;
+              const responseSchema = route.response;
 
-            const response = await fetch(`${server}/${routeName}`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-              },
-              body: JSON.stringify(parsedRequest),
-            });
+              const parsedRequest = requestSchema.parse(requestData);
 
-            if (!response.ok) {
-              const text = await response.text();
-              throw new Error(text);
+              const response = await fetch(`${server}/${routeName}`, {
+                method: "POST",
+                signal: abortController.signal,
+                headers: {
+                  "Content-Type": "application/json",
+                  "Accept": "application/json"
+                },
+                body: JSON.stringify(parsedRequest),
+              });
+
+              if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text);
+              }
+
+              const responseData = await response.json();
+              return responseSchema.parse(responseData);
+            },
+            cancel: () => {
+              abortController.abort();
             }
-
-            const responseData = await response.json();
-            return responseSchema.parse(responseData);
           };
         }
         
