@@ -12,6 +12,7 @@ import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import Container from "@mui/material/Container";
 import { useUser } from "./hooks/user";
+import { Notification } from "./components/notification";
 
 function App() {
   const {
@@ -28,6 +29,7 @@ function App() {
 
   return (
     <Container>
+      <Notification />
       <Stack spacing={3}>
         <Typography variant="h4" align="center">
           Create one user
