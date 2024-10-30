@@ -269,7 +269,12 @@ export const createApplication = <GenericRequest extends ZodSchema, GenericRespo
           const parsedRequest = toJsonOr(undefined, body);
           const requestSchema = route.request;
           const validatedRequest = requestSchema.parse(parsedRequest);
-          const implementation = implementations[routePath] as HttpImplementation<GenericRequest, GenericResponse, GenericRoutes, keyof GenericRoutes>;
+          const implementation = implementations[routePath];
+
+          if (implementation === undefined) {
+            throw new Error(`Implementation not found for path ${routePath}`);
+          }
+
           const result = await implementation(validatedRequest);
 
           headers.set("Content-Type", "application/json");
