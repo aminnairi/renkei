@@ -1,7 +1,6 @@
 import { ChangeEventHandler, FormEventHandler, useCallback, useEffect, useMemo, useState } from 'react'
 import { Users } from '@superblue/example-core/routes/getUsers';
 import { client } from "../superblue/client";
-import { exhaustive } from "exhaustive";
 import { useNotification } from './notification';
 
 export const useUser = () => {
