@@ -1,11 +1,11 @@
-import { createServerSentEventImplementation } from "@superblue/example-core";
+import { createEventImplementation } from "@superblue/example-core";
 import { userCreatedEvent } from "../events/userCreatedEvent";
 
-export const userCreatedImplementation = createServerSentEventImplementation({
+export const userCreatedImplementation = createEventImplementation({
   route: "userCreated",
-  implementation: async (emit) => {
+  implementation: async (send) => {
     userCreatedEvent.on("user", user => {
-      emit(user);
+      send(user);
     })
   }
 })
