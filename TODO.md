@@ -10,6 +10,7 @@
 - Add a way to close the response stream from the server for event route
 - Add more rules for eslint
 - Run eslint on push
+- Return an object definition with the request and close functions directly instead of having to call first the route as a function
 
 ## @superblue/example-react
 
