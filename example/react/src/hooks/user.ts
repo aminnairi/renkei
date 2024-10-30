@@ -21,11 +21,8 @@ export const useUser = () => {
     cancel: cancelCreateUserRequest,
     request: createUserRequest
   } = useMemo(() => {
-    return client.createUser({
-      firstname,
-      lastname
-    });
-  }, [firstname, lastname]);
+    return client.createUser();
+  }, []);
 
   const updateFirstname: ChangeEventHandler<HTMLInputElement> = useCallback((event) => {
     setFirstname(event.target.value);
@@ -51,7 +48,10 @@ export const useUser = () => {
       setError("");
       setMessage("");
 
-      const response = await createUserRequest();
+      const response = await createUserRequest({
+        firstname,
+        lastname
+      });
 
       if (response.success) {
         setMessage(response.message);
@@ -79,7 +79,7 @@ export const useUser = () => {
       const errorMessage = error instanceof Error ? error.message : String(error);
       setError(`Unexpected error: ${errorMessage}`);
     }
-  }, [createUserRequest, getUsers]);
+  }, [createUserRequest, firstname, getUsers, lastname]);
 
   useEffect(() => {
     getUsers();
