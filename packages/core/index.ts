@@ -156,7 +156,7 @@ export const createApplication = <GenericRequest extends ZodSchema, GenericRespo
 
             const responseData = await response.json();
             return responseSchema.parse(responseData);
-          }
+          };
         }
         
         if (isEventRoute(route)) {
@@ -170,8 +170,8 @@ export const createApplication = <GenericRequest extends ZodSchema, GenericRespo
 
             return () => {
               eventSource.close();
-            }
-          }
+            };
+          };
         }
 
         throw new Error(`Invalid route type for ${routeName}, expected http or serverSentEvent`);
@@ -241,7 +241,7 @@ export const createApplication = <GenericRequest extends ZodSchema, GenericRespo
           response.writeHead(200, Object.fromEntries(headers.entries()));
 
           implementation((unvalidatedResponse: unknown) => {
-            const validatedResponse = route.response.parse(unvalidatedResponse)
+            const validatedResponse = route.response.parse(unvalidatedResponse);
 
             response.write(`event: message\ndata: ${JSON.stringify(validatedResponse)}\n\n`);
           });
@@ -252,8 +252,8 @@ export const createApplication = <GenericRequest extends ZodSchema, GenericRespo
         if (isHttpRoute(route)) {
           const body = await getBody(request);
           const parsedRequest = toJsonOr(undefined, body);
-          const requestSchema = route.request
-          const validatedRequest = requestSchema.parse(parsedRequest)
+          const requestSchema = route.request;
+          const validatedRequest = requestSchema.parse(parsedRequest);
           const implementation = implementations[routePath] as HttpImplementation<GenericRequest, GenericResponse, GenericRoutes, keyof GenericRoutes>;
           const result = await implementation(validatedRequest);
 
@@ -291,7 +291,7 @@ export const createApplication = <GenericRequest extends ZodSchema, GenericRespo
     createEventImplementation,
     createRequestListener
   };
-}
+};
 
 /**
  * Create a route that accept requests, and sends responses.
@@ -301,8 +301,8 @@ export const createHttpRoute = <GenericRequest extends ZodSchema, GenericRespons
     type: "http",
     request,
     response
-  }
-}
+  };
+};
 
 /**
  * Create a route that sends Server-Sent Events (SSE).
@@ -311,7 +311,7 @@ export const createEventRoute = <Response extends ZodSchema>({ response }: { res
   return {
     type: "event",
     response
-  }
-}
+  };
+};
 
 export * from "zod";

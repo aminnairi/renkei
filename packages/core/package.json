@@ -5,7 +5,8 @@
   "version": "0.1.0",
   "description": "Effortless type-safe communication between client and server",
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "fix": "eslint --fix ."
   },
   "dependencies": {
     "zod": "3.23.8"
