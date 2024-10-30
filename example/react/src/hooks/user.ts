@@ -73,9 +73,13 @@ export const useUser = () => {
   }, [getUsers]);
 
   useEffect(() => {
-    client.userCreated((user) => {
+    const stopListeningForUserCreatedEvents = client.userCreated((user) => {
       console.log(`Received a user: ${user.firstname} ${user.lastname}`);
     });
+
+    return () => {
+      stopListeningForUserCreatedEvents();
+    }
   }, []);
 
   return {
