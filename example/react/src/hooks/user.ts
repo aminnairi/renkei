@@ -56,28 +56,41 @@ export const useUser = () => {
         lastname
       });
 
-      if (response.success) {
-        setMessage(response.message);
-        getUsers();
-      } else {
-        exhaustive(response.error, {
-          FIRSTNAME_EMPTY: () => {
+      ((): void => {
+        switch (response.status) {
+          case "SUCCESS":
+            setMessage(response.message);
+            getUsers();
+            return
+
+          case "LIMITED":
+            setError(`Request limited until ${new Date(response.retryAfter)}`);
+            return
+
+          case "FIRSTNAME_EMPTY":
             setError("First name should not be empty.");
-          },
-          FIRSTNAME_TOO_LONG: () => {
+            return
+
+          case "FIRSTNAME_TOO_LONG":
             setError("First name should be no more than 50 characters.");
-          },
-          LASTNAME_EMPTY: () => {
+            return
+
+          case "LASTNAME_EMPTY":
             setError("Last name should not be empty.");
-          },
-          LASTNAME_TOO_LONG: () => {
+            return
+
+          case "LASTNAME_TOO_LONG":
             setError("Last name should be no more than 50 characters.");
-          },
-          USER_ALREADY_EXISTS: () => {
+            return
+
+          case "USER_ALREADY_EXISTS":
             setError("User already exist.");
-          }
-        })
-      }
+            return
+
+          default:
+            return response;
+        }
+      })()
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       setError(`Unexpected error: ${errorMessage}`);
