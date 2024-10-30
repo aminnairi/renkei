@@ -2,12 +2,12 @@ import { createHttpImplementation } from "@superblue/example-core";
 import { randomUUID } from "crypto";
 import { users } from "../state/users";
 import { userCreatedEvent } from "../events/userCreatedEvent";
-import { limiter } from "../limiter";
+import { limit } from "../limiter";
 
 export const createUserImplementation = createHttpImplementation({
   route: "createUser",
   implementation: async ({ firstname, lastname }, { headers: { origin } }) => {
-    const { allowed, retryAfter } = limiter(origin ?? "http://unknown");
+    const { allowed, retryAfter } = limit(origin ?? "http://unknown");
 
     if (!allowed) {
       return {
