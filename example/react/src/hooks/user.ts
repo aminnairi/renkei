@@ -1,7 +1,8 @@
-import { ChangeEventHandler, FormEventHandler, useCallback, useEffect, useState } from 'react'
+import { ChangeEventHandler, FormEventHandler, useCallback, useEffect, useMemo, useState } from 'react'
 import { Users } from '@superblue/example-core/routes/getUsers';
 import { client } from "../superblue/client";
 import { exhaustive } from "exhaustive";
+
 
 export const useUser = () => {
   const [firstname, setFirstname] = useState("");
@@ -9,6 +10,23 @@ export const useUser = () => {
   const [users, setUsers] = useState<Users>([]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+
+  const {
+    request: getUsersRequest,
+    cancel: cancelGetUsersRequest
+  } = useMemo(() => {
+    return client.getUsers();
+  }, []);
+
+  const {
+    cancel: cancelCreateUserRequest,
+    request: createUserRequest
+  } = useMemo(() => {
+    return client.createUser({
+      firstname,
+      lastname
+    });
+  }, [firstname, lastname]);
 
   const updateFirstname: ChangeEventHandler<HTMLInputElement> = useCallback((event) => {
     setFirstname(event.target.value);
@@ -20,14 +38,13 @@ export const useUser = () => {
 
   const getUsers = useCallback(async () => {
     try {
-      const receivedUsers = await client.getUsers(undefined);
-
+      const receivedUsers = await getUsersRequest();
       setUsers(receivedUsers);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       setError(`Unexpected error: ${errorMessage}`);
     }
-  }, []);
+  }, [getUsersRequest]);
 
   const createUser: FormEventHandler = useCallback(async (event) => {
     try {
@@ -35,10 +52,7 @@ export const useUser = () => {
       setError("");
       setMessage("");
 
-      const response = await client.createUser({
-        firstname,
-        lastname
-      })
+      const response = await createUserRequest();
 
       if (response.success) {
         setMessage(response.message);
@@ -66,11 +80,21 @@ export const useUser = () => {
       const errorMessage = error instanceof Error ? error.message : String(error);
       setError(`Unexpected error: ${errorMessage}`);
     }
-  }, [firstname, getUsers, lastname]);
+  }, [createUserRequest, getUsers]);
 
   useEffect(() => {
     getUsers();
-  }, [getUsers]);
+
+    return () => {
+      cancelGetUsersRequest();
+    }
+  }, [cancelGetUsersRequest, getUsers]);
+
+  useEffect(() => {
+    return () => {
+      cancelCreateUserRequest();
+    }
+  }, [cancelCreateUserRequest]);
 
   useEffect(() => {
     const stopListeningForUserCreatedEvents = client.userCreated((user) => {
