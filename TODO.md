@@ -8,6 +8,8 @@
 - Allow accessing bits of the request from the implementations
 - Add a way to close the event source from the client for event route
 - Add a way to close the response stream from the server for event route
+- Add more rules for eslint
+- Run eslint on push
 
 ## @superblue/example-react
 
