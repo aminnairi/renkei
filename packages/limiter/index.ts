@@ -1,4 +1,4 @@
-interface LimiterStorage {
+interface LimiterStrategy {
   get(id: string): Promise<Client | undefined>
   set(id: string, client: Client): Promise<void>
 }
@@ -6,7 +6,7 @@ interface LimiterStorage {
 export interface CreateLimiterOptions {
   requestsPerWindow: number,
   windowInSeconds: number,
-  storage: LimiterStorage
+  strategy: LimiterStrategy
 }
 
 export interface Limited {
@@ -24,13 +24,13 @@ export interface Client {
   requestedAt: Date
 }
 
-export type Limiter = (id: string) => Promise<Limited | NotLimited | Error>
+export type LimitFunction = (id: string) => Promise<Limited | NotLimited | Error>
 
-export const createLimiter = (options: CreateLimiterOptions): Limiter => {
+export const createLimiter = (options: CreateLimiterOptions): LimitFunction => {
   return async (id: string) => {
     try {
 
-      const foundClientForId = await options.storage.get(id);
+      const foundClientForId = await options.strategy.get(id);
 
       if (!foundClientForId) {
         const client: Client = {
@@ -38,12 +38,16 @@ export const createLimiter = (options: CreateLimiterOptions): Limiter => {
           requestedAt: new Date()
         };
 
-        await options.storage.set(id, client);
+        await options.strategy.set(id, client);
+
+        const unlockedAt = new Date(client.requestedAt.getTime());
+
+        unlockedAt.setSeconds(client.requestedAt.getSeconds() + options.windowInSeconds);
 
         return {
           status: "available",
           availableRequests: client.availableRequests,
-          unlockedAt: new Date(client.requestedAt.getTime()).setSeconds(client.requestedAt.getSeconds() + options.windowInSeconds)
+          unlockedAt
         };
       }
 
@@ -53,7 +57,7 @@ export const createLimiter = (options: CreateLimiterOptions): Limiter => {
       unlockedAt.setSeconds(unlockedAt.getSeconds() + options.windowInSeconds);
 
       if (unlockedAt < now) {
-        await options.storage.set(id, {
+        await options.strategy.set(id, {
           availableRequests: options.requestsPerWindow,
           requestedAt: now
         });
@@ -67,7 +71,7 @@ export const createLimiter = (options: CreateLimiterOptions): Limiter => {
       const newAvailableRequestsCount = foundClientForId.availableRequests - 1;
 
       if (newAvailableRequestsCount < 1) {
-        await options.storage.set(id, {
+        await options.strategy.set(id, {
           ...foundClientForId,
           availableRequests: 0
         });
@@ -88,7 +92,7 @@ export const createLimiter = (options: CreateLimiterOptions): Limiter => {
   }
 }
 
-export class InMemoryLimiterStorage implements LimiterStorage {
+export class InMemoryStrategy implements LimiterStrategy {
   private readonly map: Map<string, Client> = new Map();
 
   public async get(id: string): Promise<Client | undefined> {
