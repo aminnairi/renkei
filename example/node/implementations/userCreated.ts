@@ -3,7 +3,7 @@ import { userCreatedEvent } from "../events/userCreatedEvent";
 
 export const userCreatedImplementation = createEventImplementation({
   route: "userCreated",
-  implementation: async (send) => {
+  implementation: send => {
     userCreatedEvent.on("user", user => {
       send(user);
     })
