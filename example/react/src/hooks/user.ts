@@ -63,7 +63,7 @@ export const useUser = () => {
             return
 
           case "LIMITED":
-            setError(`Request limited until ${new Date(response.retryAfter)}`);
+            setError(`Request limited until ${response.retryAfter.toLocaleDateString("en-US")} ${response.retryAfter.toLocaleTimeString("en-US")}`);
             return
 
           case "FIRSTNAME_EMPTY":
