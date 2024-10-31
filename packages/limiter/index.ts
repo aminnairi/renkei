@@ -1,46 +1,80 @@
-type RateLimiterOptions = {
-  /** Maximum number of requests allowed */
-  limit: number;
-  /** Time window in milliseconds */
-  windowMs: number;
-};
+export interface CreateLimiterOptions {
+  requestsPerWindow: number,
+  windowInSeconds: number
+}
 
-type RateLimiterResult = {
-  /** Whether the request is allowed */
-  allowed: boolean;
-  /** Remaining requests in the window */
-  remaining: number;
-  /** Time in ms after which the next request can be allowed */
-  retryAfter?: number;
-};
+export interface Limited {
+  status: "limited",
+  unlockedAt: Date
+}
 
-/** The rateLimiter function returns a closure that tracks request counts */
-export const createRateLimiter = (options: RateLimiterOptions) => {
-  const { limit, windowMs } = options;
-  const timestamps: Map<string, number[]> = new Map();
+export interface NotLimited {
+  status: "available",
+  availableRequests: number
+}
 
-  return (id: string): RateLimiterResult => {
-    const now = Date.now();
-    const windowStart = now - windowMs;
+export interface Client {
+  availableRequests: number,
+  requestedAt: Date
+}
 
-    const requestTimes = timestamps.get(id) || [];
-    const recentRequests = requestTimes.filter(timestamp => timestamp >= windowStart);
+export type Limiter = (id: string) => Limited | NotLimited
 
-    if (recentRequests.length >= limit) {
-      const retryAfter = windowStart + windowMs - recentRequests[0];
+export const createLimiter = (options: CreateLimiterOptions): Limiter => {
+  const idPerClient = new Map<string, Client>();
+
+  return (id: string) => {
+    const foundClientForId = idPerClient.get(id);
+
+    if (!foundClientForId) {
+      const client: Client = {
+        availableRequests: options.requestsPerWindow,
+        requestedAt: new Date()
+      };
+
+      idPerClient.set(id, client);
+
       return {
-        allowed: false,
-        remaining: 0,
-        retryAfter
+        status: "available",
+        availableRequests: client.availableRequests,
+        unlockedAt: new Date(client.requestedAt.getTime()).setSeconds(client.requestedAt.getSeconds() + options.windowInSeconds)
       };
     }
 
-    recentRequests.push(now);
-    timestamps.set(id, recentRequests);
+    const unlockedAt = new Date(foundClientForId.requestedAt.getTime())
+    const now = new Date()
+
+    unlockedAt.setSeconds(unlockedAt.getSeconds() + options.windowInSeconds);
+
+    if (unlockedAt < now) {
+      idPerClient.set(id, {
+        availableRequests: options.requestsPerWindow,
+        requestedAt: now
+      });
+
+      return {
+        status: "available",
+        availableRequests: options.requestsPerWindow,
+      }
+    }
+
+    const newAvailableRequestsCount = foundClientForId.availableRequests - 1;
+
+    if (newAvailableRequestsCount < 1) {
+      idPerClient.set(id, {
+        ...foundClientForId,
+        availableRequests: 0
+      });
+
+      return {
+        status: "limited",
+        unlockedAt
+      };
+    }
 
     return {
-      allowed: true,
-      remaining: limit - recentRequests.length
+      status: "available",
+      availableRequests: newAvailableRequestsCount
     };
-  };
-};
+  }
+}
