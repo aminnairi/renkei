@@ -7,7 +7,13 @@ import { limit } from "../limiter";
 export const createUserImplementation = createHttpImplementation({
   route: "createUser",
   implementation: async ({ firstname, lastname }, { headers: { origin } }) => {
-    const limitation = limit(origin ?? "http://unknown");
+    const limitation = await limit(origin ?? "http://unknown");
+
+    if (limitation instanceof Error) {
+      return {
+        status: "UNEXPECTED_ERROR"
+      }
+    }
 
     if (limitation.status === "limited") {
       return {

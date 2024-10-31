@@ -86,6 +86,10 @@ export const useUser = () => {
             setError("User already exist.");
             return
 
+          case "UNEXPECTED_ERROR":
+            setError("Unexpected error");
+            return
+
           default:
             return response;
         }

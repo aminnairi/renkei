@@ -15,6 +15,9 @@ export const createUserRoute = createHttpRoute({
       retryAfter: z.date({ coerce: true }),
     }),
     z.object({
+      status: z.literal("UNEXPECTED_ERROR"),
+    }),
+    z.object({
       status: z.literal("FIRSTNAME_EMPTY")
     }),
     z.object({
