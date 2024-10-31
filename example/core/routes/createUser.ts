@@ -12,7 +12,7 @@ export const createUserRoute = createHttpRoute({
     }),
     z.object({
       status: z.literal("LIMITED"),
-      retryAfter: z.number(),
+      retryAfter: z.date({ coerce: true }),
     }),
     z.object({
       status: z.literal("FIRSTNAME_EMPTY")
