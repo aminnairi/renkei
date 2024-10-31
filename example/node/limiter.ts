@@ -1,3 +1,7 @@
-import { createRateLimiter } from "@superblue/limiter";
+import { createLimiter } from "@superblue/limiter";
 
-export const limit = createRateLimiter({ limit: 1, windowMs: 60000 }); // 10 requests per minute
+// 1 request per 10 seconds
+export const limit = createLimiter({
+  requestsPerWindow: 1,
+  windowInSeconds: 10 
+});
