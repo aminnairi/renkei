@@ -13,6 +13,7 @@ import TableCell from "@mui/material/TableCell";
 import Container from "@mui/material/Container";
 import { useUser } from "./hooks/user";
 import { Notification } from "./components/notification";
+import { Header } from "./components/header";
 
 function App() {
   const {
@@ -28,95 +29,98 @@ function App() {
   } = useUser()
 
   return (
-    <Container>
+    <>
+      <Header />
       <Notification />
-      <Stack spacing={3}>
-        <Typography variant="h4" align="center">
-          Create one user
-        </Typography>
-        {message && (
-          <Alert severity="info">
-            {message}
-          </Alert>
-        )}
-        {error && (
-          <Alert severity="error">
-            {error}
-          </Alert>
-        )}
-        <Stack 
-          component="form" 
-          onSubmit={createUser} 
-          spacing={3}>
-          <TextField 
-            label="First Name" 
-            type="text" 
-            value={firstname} 
-            onChange={updateFirstname} />
-          <TextField 
-            type="text" 
-            label="Last Name" 
-            value={lastname} 
-            onChange={updateLastname} />
-          <Button 
-            variant="contained" 
-            sx={{ alignSelf: "center" }} 
-            type="submit">
-            Create
-          </Button>
-        </Stack>
-        <Typography 
-          variant="h4" 
-          align="center">
-          Users
-        </Typography>
-        <Button 
-          onClick={getUsers} 
-          variant="outlined" 
-          sx={{ alignSelf: "center" }}>
-          Refresh
-        </Button>
-        {users.length === 0 && (
-          <Typography align="center">
-            No users available.
+      <Container>
+        <Stack spacing={3}>
+          <Typography variant="h4" align="center">
+            Create one user
           </Typography>
-        )}
-        {users.length !== 0 && (
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>
-                    Identifier
-                  </TableCell>
-                  <TableCell>
-                    First Name
-                  </TableCell>
-                  <TableCell>
-                    Last Name
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {users.map(user => (
-                  <TableRow key={user.identifier}>
+          {message && (
+            <Alert severity="info">
+              {message}
+            </Alert>
+          )}
+          {error && (
+            <Alert severity="error">
+              {error}
+            </Alert>
+          )}
+          <Stack
+            component="form"
+            onSubmit={createUser}
+            spacing={3}>
+            <TextField
+              label="First Name"
+              type="text"
+              value={firstname}
+              onChange={updateFirstname} />
+            <TextField
+              type="text"
+              label="Last Name"
+              value={lastname}
+              onChange={updateLastname} />
+            <Button
+              variant="contained"
+              sx={{ alignSelf: "center" }}
+              type="submit">
+              Create
+            </Button>
+          </Stack>
+          <Typography
+            variant="h4"
+            align="center">
+            Users
+          </Typography>
+          <Button
+            onClick={getUsers}
+            variant="outlined"
+            sx={{ alignSelf: "center" }}>
+            Refresh
+          </Button>
+          {users.length === 0 && (
+            <Typography align="center">
+              No users available.
+            </Typography>
+          )}
+          {users.length !== 0 && (
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
                     <TableCell>
-                      {user.identifier}
+                      Identifier
                     </TableCell>
                     <TableCell>
-                      {user.firstname}
+                      First Name
                     </TableCell>
                     <TableCell>
-                      {user.lastname}
+                      Last Name
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
-      </Stack>
-    </Container>
+                </TableHead>
+                <TableBody>
+                  {users.map(user => (
+                    <TableRow key={user.identifier}>
+                      <TableCell>
+                        {user.identifier}
+                      </TableCell>
+                      <TableCell>
+                        {user.firstname}
+                      </TableCell>
+                      <TableCell>
+                        {user.lastname}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </Stack>
+      </Container>
+    </>
   )
 }
 
