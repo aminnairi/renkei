@@ -7,12 +7,12 @@ import { limit } from "../limiter";
 export const createUserImplementation = createHttpImplementation({
   route: "createUser",
   implementation: async ({ firstname, lastname }, { headers: { origin } }) => {
-    const { allowed, retryAfter } = limit(origin ?? "http://unknown");
+    const limitation = limit(origin ?? "http://unknown");
 
-    if (!allowed) {
+    if (limitation.status === "limited") {
       return {
         status: "LIMITED",
-        retryAfter: retryAfter ?? 0
+        retryAfter: limitation.unlockedAt
       };
     }
 
