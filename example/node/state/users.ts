@@ -1,3 +1,3 @@
-import { Users } from "@superblue/example-node/routes/getUsers";
+import { Users } from "@example/shared/routes/getUsers";
 
 export const users: Users = [];
