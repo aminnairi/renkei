@@ -46,4 +46,23 @@ export const client = createClient({
   server: "http://localhost:8000",
   adapter: createHttpClientAdapter()
 });
+
+const close = client.userCreated(({ identifier }) => {
+  console.log(`User created with id ${identifier}.`);
+});
+
+setTimeout(() => {
+  close();
+}, 30_000);
+
+const abortController = new AbortController();
+
+const { identifier } = await client.createUser({
+  firstname: "John",
+  lastname: "DOE"
+});
+
+setTimeout(() => {
+  abortController.abort();
+}, 3_000);
 ```
