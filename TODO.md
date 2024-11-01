@@ -7,18 +7,11 @@
 - Add a custom error for when the status code is wrong
 - Add a custom error for when the network is down
 - Add a custom error for when the request is canceled
-
-## @superblue/client
-
-- Rename to `@superblue/fetch`
+- Return error instead of throwing them for both the client & server
 
 ## @superblue/axios
 
 - Add an adapter for using `axios`
-
-## @superblue/server
-
-- Rename `@superblue/server` into `@superblue/node`
 
 ## @superblue/express
 
