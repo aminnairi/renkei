@@ -1,5 +1,5 @@
 import { createServer } from "@example/shared"
-import { createNodeHttpServerAdapter } from "@superblue/server";
+import { createNodeHttpServerAdapter } from "@superblue/node";
 
 import { createUserImplementation } from "./implementations/createUser";
 import { getUsersImplementation } from "./implementations/getUsers";
