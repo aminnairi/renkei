@@ -15,6 +15,14 @@ export const useUser = () => {
   const getUsersAbortController = useRef(new AbortController());
   const createUserAbortController = useRef(new AbortController());
 
+  const cancelGetUsers = useCallback(() => {
+    getUsersAbortController.current.abort();
+  }, []);
+
+  const cancelCreateUser = useCallback(() => {
+    createUserAbortController.current.abort();
+  }, []);
+
   const updateFirstname: ChangeEventHandler<HTMLInputElement> = useCallback((event) => {
     setFirstname(event.target.value);
   }, []);
@@ -100,16 +108,26 @@ export const useUser = () => {
 
   useEffect(() => {
     getUsers();
-  }, [getUsers]);
+
+    return cancelGetUsers;
+  }, [cancelGetUsers, getUsers]);
 
   useEffect(() => {
-    client.userCreated((user) => {
+    return () => {
+      cancelCreateUser();
+    }
+  }, [cancelCreateUser]);
+
+  useEffect(() => {
+    const stopListening = client.userCreated((user) => {
       sendNotification({
         message: `Received a user: ${user.firstname} ${user.lastname}`,
         severity: "success",
         duration: 5000
       });
     });
+
+    return stopListening
   }, [sendNotification]);
 
   return {
