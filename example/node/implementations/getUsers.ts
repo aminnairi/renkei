@@ -1,9 +1,6 @@
-import { createHttpImplementation } from "@superblue/example-core";
+import { implementGetUsers } from "../../shared/routes/getUsers";
 import { users } from "../state/users";
 
-export const getUsersImplementation = createHttpImplementation({
-  route: "getUsers",
-  implementation: async () => {
-    return users;
-  }
+export const getUsersImplementation = implementGetUsers(async () => {
+  return users;
 });
