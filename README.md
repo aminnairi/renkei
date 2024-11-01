@@ -40,8 +40,8 @@ With `superblue`, error handling becomes more manageable, consistent, and secure
 Package | Description
 ---|---
 [`@superblue/core`](./packages/core) | Effortless type-safe communication between client and server
-[`@superblue/client`](./packages/client) | Client utilities for superblue
-[`@superblue/server`](./packages/server) | Server utilities for superblue
+[`@superblue/fetch`](./packages/fetch) | Web API Fetch adapter for superblue
+[`@superblue/node`](./packages/node) | Node.js adapter for superblue
 
 ## Example
 
