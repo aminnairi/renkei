@@ -1,9 +1,9 @@
 {
   "private": true,
   "type": "module",
-  "name": "@superblue/server",
+  "name": "@superblue/node",
   "version": "0.1.0",
-  "description": "Server utilities for superblue",
+  "description": "Node.js adapters for superblue",
   "scripts": {
     "lint": "eslint .",
     "fix": "eslint --fix ."
