@@ -1,9 +1,9 @@
 {
   "private": true,
   "type": "module",
-  "name": "@superblue/node",
+  "name": "@superblue/fetch",
   "version": "0.1.0",
-  "description": "Client utilities for superblue",
+  "description": "Web API Fetch adapter for superblue",
   "scripts": {
     "lint": "eslint .",
     "fix": "eslint --fix ."
