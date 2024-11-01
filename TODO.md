@@ -9,6 +9,10 @@
 - Add a custom error for when the request is canceled
 - Return error instead of throwing them for both the client & server
 
+## @superblue/fetch
+
+- Rename `createHttpClientAdapter` to `createFetchAdapter`
+
 ## @superblue/axios
 
 - Add an adapter for using `axios`
