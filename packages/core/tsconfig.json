@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "node",
     "strict": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
