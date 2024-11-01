@@ -4,7 +4,23 @@ Effortless type-safe communication between client and server
 
 ## Installation
 
-Comming Soon.
+### TypeScript setup
+
+```json
+{
+  "compilerOptions": {
+    "strict": true
+  }
+}
+```
+
+### Package Installation
+
+> Note: the package is not yet published
+
+```bash
+npm install @superblue/core
+```
 
 ## Usage
 
