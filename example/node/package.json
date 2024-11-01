@@ -1,7 +1,7 @@
 {
   "private": true,
   "type": "module",
-  "name": "@superblue/example-node",
+  "name": "@example/node",
   "version": "0.1.0",
   "description": "Node example for superblue",
   "scripts": {
