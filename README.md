@@ -2,6 +2,18 @@
 
 Effortless type-safe communication between client and server
 
+## Packages
+
+Package | Description
+---|---
+[`@superblue/core`](./packages/core) | Effortless type-safe communication between client and server
+[`@superblue/fetch`](./packages/fetch) | Web API Fetch adapter for superblue
+[`@superblue/node`](./packages/node) | Node.js adapter for superblue
+
+## Example
+
+See [`example`](./example).
+
 ## Why
 
 ### Http does not scale
@@ -34,15 +46,3 @@ Error handling is a complex aspect of modern application development, with uniqu
 - **Improved Security with Controlled Responses**: Detailed error messages must be managed carefully to avoid revealing sensitive information. With `superblue`, error responses can be configured to balance user feedback and security, ensuring that only necessary information is shared while maintaining safe practices.
 
 With `superblue`, error handling becomes more manageable, consistent, and secure across both server and client applications. Centralized error structures reduce duplication and provide a more predictable experience for clients, while controlled error responses enhance security.
-
-## Packages
-
-Package | Description
----|---
-[`@superblue/core`](./packages/core) | Effortless type-safe communication between client and server
-[`@superblue/fetch`](./packages/fetch) | Web API Fetch adapter for superblue
-[`@superblue/node`](./packages/node) | Node.js adapter for superblue
-
-## Example
-
-See [`example`](./example).
