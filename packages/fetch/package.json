@@ -1,7 +1,7 @@
 {
   "private": true,
   "type": "module",
-  "name": "@superblue/client",
+  "name": "@superblue/node",
   "version": "0.1.0",
   "description": "Client utilities for superblue",
   "scripts": {
