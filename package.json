@@ -2,8 +2,9 @@
   "private": true,
   "workspaces": [
     "packages/core",
-    "packages/limiter",
-    "example/core",
+    "packages/client",
+    "packages/server",
+    "example/shared",
     "example/node",
     "example/react"
   ]
