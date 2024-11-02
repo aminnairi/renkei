@@ -8,27 +8,16 @@
 - Add a custom error for when the network is down
 - Add a custom error for when the request is canceled
 - Return error instead of throwing them for both the client & server
+- Add an example explaining how to create its own server adapter
+- Add an example explaining how to create its own client adapter
 
 ## @superblue/fetch
 
-- Rename `createHttpClientAdapter` to `createFetchAdapter`
+- Allow passing options for the `createFetchAdapter` function
+- Allow compressing the data if possible
+- Show an example of a file upload
 
-## @superblue/axios
+## @superblue/node
 
-- Add an adapter for using `axios`
-
-## @superblue/express
-
-- Add an adapter for using `express`
-
-## @superblue/hono
-
-- Add an adapter for using `hono`
-
-## @superblue/bun
-
-- Add an adapter for using `bun`
-
-## @superblue/deno
-
-- Add an adapter for using `deno`
+- Account for compressed requests (see above) if possible
+- Add an example explaining how to create its own compression strategy
