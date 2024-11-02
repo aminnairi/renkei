@@ -10,6 +10,7 @@
 - Publish the library
 - Add the correction description for all `README.md` files of `packages`
 - Add links to the relevant requirements in all `README.md` files of `packages`
+- Create a hard link for the `CONTRIBUTING.md` and `LICENSE` files instead of soft links
 
 ## @superblue/core
 
