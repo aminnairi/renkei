@@ -10,6 +10,7 @@
 - Return error instead of throwing them for both the client & server
 - Add an example explaining how to create its own server adapter
 - Add an example explaining how to create its own client adapter
+- Make the `createServer` function return whatever is the type of the output of the `ServerAdapter` used 
 
 ## @superblue/fetch
 
