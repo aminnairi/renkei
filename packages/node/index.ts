@@ -1,6 +1,21 @@
 import { ServerAdapter } from "@superblue/core";
 import { createServer, IncomingMessage } from "http";
-import { Readable } from "stream";
+import { Transform, Readable, PassThrough } from "stream";
+import { createBrotliCompress, createDeflate, createGzip } from "zlib"
+
+interface CompressionMetadata {
+  compressionHeaders: { "Content-Encoding"?: "gzip" | "br" | "deflate" },
+  compressedStream: Transform
+}
+
+export interface CompressionStrategy {
+  compress: (request: IncomingMessage) => CompressionMetadata
+}
+
+export interface CreateNodeHttpServerAdapterOptions {
+  clients?: string[],
+  compression?: CompressionStrategy
+}
 
 export function jsonParseOr<Value>(fallback: Value, text: string): Value {
   try {
@@ -10,7 +25,95 @@ export function jsonParseOr<Value>(fallback: Value, text: string): Value {
   }
 }
 
-export function createNodeHttpServerAdapter({ clients }: { clients: string[] }): ServerAdapter {
+export interface GzipCompressionOptions {
+  exceptions?: string[]
+}
+
+export function gzipCompression({ exceptions = [] }: GzipCompressionOptions = {}): CompressionStrategy {
+  return {
+    compress: request => {
+      if (exceptions.includes(request.headers["accept"] ?? "")) {
+        return {
+          compressedStream: new PassThrough,
+          compressionHeaders: {}
+        };
+      }
+
+      if (!request.headers["accept-encoding"]?.includes("gzip")) {
+        return {
+          compressionHeaders: {},
+          compressedStream: new PassThrough
+        }
+      }
+
+      const gzip = createGzip();
+
+      return {
+        compressedStream: gzip,
+        compressionHeaders: {
+          "Content-Encoding": "gzip"
+        }
+      };
+    }
+  };
+}
+
+export function brotliCompression(): CompressionStrategy {
+  return {
+    compress: request => {
+      if (!request.headers["accept-encoding"]?.includes("br")) {
+        return {
+          compressionHeaders: {},
+          compressedStream: new PassThrough
+        }
+      }
+
+      const compressedStream = createBrotliCompress();
+
+      return {
+        compressedStream,
+        compressionHeaders: {
+          "Content-Encoding": "br"
+        }
+      };
+    }
+  };
+}
+
+export function deflateCompression(): CompressionStrategy {
+  return {
+    compress: request => {
+      if (!request.headers["accept-encoding"]?.includes("deflate")) {
+        return {
+          compressionHeaders: {},
+          compressedStream: new PassThrough
+        }
+      }
+
+      const compressedStream = createDeflate();
+
+      return {
+        compressedStream,
+        compressionHeaders: {
+          "Content-Encoding": "deflate"
+        }
+      };
+    }
+  };
+}
+
+export function noCompression(): CompressionStrategy {
+  return {
+    compress: (request) => {
+      return {
+        compressionHeaders: {},
+        compressedStream: new PassThrough
+      }
+    }
+  };
+}
+
+export function createNodeHttpServerAdapter({ clients = [], compression = noCompression() }: CreateNodeHttpServerAdapterOptions = { }): ServerAdapter {
   const server = createServer();
 
   function getBody(request: IncomingMessage): Promise<string> {
@@ -67,16 +170,16 @@ export function createNodeHttpServerAdapter({ clients }: { clients: string[] }):
             headers: Object.fromEntries(Object.entries(request.headers).map(([name, value]) => [name, String(value)]))
           }));
 
+          const readableBody = toNodeReadable(callbackResponse.body ?? new ReadableStream())
+          const { compressedStream, compressionHeaders } = compression.compress(request)
+
           response.writeHead(callbackResponse.status, {
             ...Object.fromEntries(callbackResponse.headers.entries()),
-            ...corsHeaders
+            ...corsHeaders,
+            ...compressionHeaders
           });
 
-          if (callbackResponse.body) {
-            toNodeReadable(callbackResponse.body).pipe(response);
-          } else {
-            response.end(callbackResponse.body);
-          }
+          readableBody.pipe(compressedStream).pipe(response);
         } catch (error) {
           response.writeHead(200, {
             "Content-Type": "application/json",
