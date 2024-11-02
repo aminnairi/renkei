@@ -1,5 +1,5 @@
 import { createServer } from "@example/shared"
-import { createNodeHttpServerAdapter } from "@superblue/node";
+import { createNodeHttpServerAdapter, gzipCompression } from "@superblue/node";
 
 import { createUserImplementation } from "./implementations/createUser";
 import { getUsersImplementation } from "./implementations/getUsers";
@@ -7,7 +7,10 @@ import { userCreatedImplementation } from "./implementations/userCreated";
 
 const server = createServer({
   adapter: createNodeHttpServerAdapter({
-    clients: ["http://localhost:5173"]
+    clients: ["http://localhost:5173"],
+    compression: gzipCompression({
+      exceptions: ["text/event-stream"]
+    })
   }),
   implementations: {
     createUser: createUserImplementation,
