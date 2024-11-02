@@ -18,6 +18,18 @@ Example | Description
 [`@example/node`](./example/node/) | Node.js example using the builtin `http` library
 [`@example/react`](./example/react/) | React.js example using Vite.js and the `fetch` Web API
 
+## License
+
+See [`LICENSE`](./LICENSE).
+
+## How to contribute
+
+See [`CONTRIBUTING.md`](./CONTRIBUTING.md).
+
+## What's left to do
+
+See [`TODO.md`](./TODO.md).
+
 ## Why
 
 ### Http does not scale
