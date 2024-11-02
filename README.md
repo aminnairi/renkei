@@ -12,7 +12,11 @@ Package | Description
 
 ## Example
 
-See [`example`](./example).
+Example | Description
+---|---
+[`@example/shared`](./example/shared/) | Shared code necessary for both the client and server
+[`@example/node`](./example/node/) | Node.js example using the builtin `http` library
+[`@example/react`](./example/react/) | React.js example using Vite.js and the `fetch` Web API
 
 ## Why
 
