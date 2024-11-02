@@ -1,6 +1,6 @@
 import { ClientAdapter } from "@superblue/core"
 
-export function createHttpClientAdapter(): ClientAdapter {
+export function createFetchAdapter(): ClientAdapter {
   return {
     request: async ({ body, url, signal }) => {
       const response = await window.fetch(url, {
