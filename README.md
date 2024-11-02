@@ -69,16 +69,22 @@ Both tRPC and superblue works with major framework and servers. While tRPC is so
 
 tRPC does something very interesting to enhance request performance when sending multiple requests at the same time: batching. This enables you to have multiple requests sent as one, decreasing the number of requests and data needed to perform your actions. This is something that is actually missing in superblue, but maybe implemented in a near future.
 
-### ts-rest, gRPC, GraphQL, Hono, ...
+### GraphQL
 
-Well, I don't think about any other libraries in particular.
+GraphQL stands out as a unique solution in the landscape of APIs, designed primarily to provide a more flexible and efficient way of handling data fetching. Unlike traditional REST APIs, where the server dictates the structure of the response, GraphQL allows clients to specify exactly what data they need. This flexibility can reduce the amount of data transferred over the network and minimize the number of requests required to gather related information. However, this comes with its own complexities, including the need for more robust querying mechanisms and the overhead of managing the schema. While GraphQL is excellent for applications that require complex data interactions, it operates in a different realm compared to Superblue, which emphasizes type-safe remote procedure calls with straightforward server-client communication.
 
-GraphQL is in its own league, and has a totally different use case to cover.
+### gRPC
 
-gRPC also is in its own category, although it is the closest to both superblue and tRPC, it works with way more programming language, and is not supported by the HTTP protocol, so it is reserved for server-to-server communications, often a popular choice when in a microservice architecture.
+gRPC stands out as a powerful solution for performance-oriented, cross-language communications, making it a favored choice in microservices architectures. One of its key advantages is its support for multiple programming languages, allowing developers to build services in various languages while still maintaining seamless interoperability. gRPC utilizes Protocol Buffers for serialization, which ensures efficient data exchange and enables automatic generation of client libraries across languages such as Java, Python, Go, and C#. This multi-language capability makes gRPC particularly appealing for organizations that leverage diverse technology stacks. However, it's important to note that gRPC operates outside the constraints of the HTTP protocol, limiting its use primarily to server-to-server communications rather than client-facing applications. While Superblue and gRPC share common ground in providing type-safe, structured communication, gRPC’s emphasis on inter-service connectivity and its broad multi-language support further distinguish it from Superblue, which focuses on facilitating type-safe remote procedure calls for both client and server applications.
 
-Hono does support RPC, and has both a server and client library for seamless communication between the two. Although the type safety is not yet at the level of superblue or tRPC when it comes to receiving data, it is still an interesting thing to see that a framework as popular and complete as Hono is doing a similar job, and I hope to see more from them in the future!
+### Hono
 
-TS Rest is maybe the closest form of a library that we could find if we compare it to superblue. It enabled you to write a contract, that you have to fulfill both on the client and the server, and even has the concept of adapters. One key difference is that it lets you define both the body and the status code that are used to discriminate the type that you get in the end. We believe that this should be something that the user should do himself, but this is an interesting way of seeing the communication and has been a great source of inspiration for this library.
+Hono is a lightweight framework that supports remote procedure calls (RPC) and facilitates seamless communication between client and server through its built-in libraries. While it boasts an impressive feature set, including a client and server library, Hono currently lags behind Superblue in terms of type safety and validation for incoming data. The framework's approach to RPC makes it an interesting alternative for developers looking for a simple yet effective solution. As Hono continues to evolve, it could bridge the gap in type safety, potentially expanding its use cases and aligning more closely with the capabilities offered by Superblue.
 
-I think that's it, I may not have explored the entire world of type-safe communication, but this is a very interesting topic and I hope to see more library out there working on the subject!
+### TS Rest
+
+TS Rest is perhaps the closest library to Superblue in terms of shared principles, as it emphasizes the importance of contracts in API communication. By allowing developers to define a contract that both the client and server must adhere to, TS Rest provides a clear structure for interaction. Its support for defining both the request body and status codes adds an additional layer of type discrimination, enhancing the overall type safety of the communication. However, Superblue encourages users to manage type definitions on their own, promoting flexibility in API design. The design philosophies of TS Rest have greatly inspired Superblue’s approach, highlighting the need for robust type-safe communication solutions in modern development.
+
+### Others?
+
+There are certainly more libraries out there, in other programming languages as well that have been forgotten here, but these represents the main inspiration source for building Superblue.
