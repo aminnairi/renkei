@@ -4,10 +4,6 @@
   "name": "@superblue/fetch",
   "version": "0.1.0",
   "description": "Web API Fetch adapter for superblue",
-  "scripts": {
-    "lint": "eslint .",
-    "fix": "eslint --fix ."
-  },
   "dependencies": {
     "zod": "3.23.8"
   },
