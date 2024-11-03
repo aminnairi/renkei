@@ -198,3 +198,7 @@ See [`LICENSE`](./LICENSE).
 ## Contributing
 
 See [`CONTRIBUTING.md`](./CONTRIBUTING.md).
+
+## Changelog
+
+See [`CHANGELOG.md`](./CHANGELOG.md).

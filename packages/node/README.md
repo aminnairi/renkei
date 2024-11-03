@@ -340,3 +340,7 @@ Here, `text/event-stream` is the `Content-Type` header sent when sending events 
 ## What's next
 
 Now that you setup your server, you may want to setup your client as well if this is not done already, head to [`@superblue/fetch`](../fetch) if you want to use the official Web API `fetch` function for sending requests to your server, or use any client adapter you want (or your own) in order to have a complete environment.
+
+## Changelog
+
+See [`CHANGELOG.md`](./CHANGELOG.md).
