@@ -1,5 +1,7 @@
 # @superblue/node
 
+Node.js adapters for superblue
+
 ## Requirements
 
 - [Node](https://nodejs.org)
@@ -344,3 +346,11 @@ Now that you setup your server, you may want to setup your client as well if thi
 ## Changelog
 
 See [`CHANGELOG.md`](./CHANGELOG.md).
+
+## Code of conduct
+
+See [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md).
+
+## Security
+
+See [`SECURITY.md`](./SECURITY.md).
