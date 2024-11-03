@@ -4,10 +4,6 @@
   "name": "@superblue/node",
   "version": "0.1.0",
   "description": "Node.js adapters for superblue",
-  "scripts": {
-    "lint": "eslint .",
-    "fix": "eslint --fix ."
-  },
   "dependencies": {
     "zod": "3.23.8"
   },
