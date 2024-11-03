@@ -1,6 +1,6 @@
-# Security Policy
+# 🔒 Security Policy
 
-## Supported Versions
+## ✅ Supported Versions
 
 Here are a list of all package, with their supported version for security backports.
 
@@ -16,7 +16,7 @@ A 🔴 indicates that this version is not supported for security backports, and 
 | `@superblue/fetch` | `x.x.x`    | :white_check_mark: |
 | `@superblue/node`  | `x.x.x`    | :white_check_mark: |
 
-## Reporting a Vulnerability
+## 🐞 Reporting a Vulnerability
 
 If you encounter a security issue, please open an issue and let us know what we can do about it.
 
