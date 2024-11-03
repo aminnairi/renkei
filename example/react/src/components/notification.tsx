@@ -7,7 +7,7 @@ export const Notification = () => {
 
   return (
     <Snackbar open={notificationOpened} onClose={closeNotification} autoHideDuration={duration}>
-      <Alert severity={severity}>
+      <Alert severity={severity} variant="filled">
         {message}
       </Alert>
     </Snackbar>
