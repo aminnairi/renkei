@@ -199,90 +199,100 @@ export function createApplication<Routes extends Record<string, HttpRoute<ZodSch
       const headers = new Headers();
 
       adapter.onRequest(async request => {
-        const url = new URL(request.url);
+        try {
+          const url = new URL(request.url);
 
-        const foundRoute = getEntries(routes).find(([routeName]) => {
-          return `/${String(routeName)}` === url.pathname;
-        });
-
-        if (!foundRoute) {
-          headers.set("Content-Type", "application/json");
-
-          return new Response(JSON.stringify({ error: "route not found" }), {
-            headers,
-            status: 404
-          });
-        }
-
-        const [, route] = foundRoute;
-
-        if (route.type === "http") {
-          headers.set("Content-Type", "application/json");
-
-          const body = await request.json();
-          const validatedBody = route.input.parse(typeof body === "string" ? jsonParseOr(null, body) : body);
-
-          const foundImplementation = getEntries(implementations).find(([routeName]) => {
+          const foundRoute = getEntries(routes).find(([routeName]) => {
             return `/${String(routeName)}` === url.pathname;
           });
 
-          if (!foundImplementation) {
-            return new Response(JSON.stringify({ error: "Implementation not found" }), {
-              status: 404,
-              headers
-            });
-          }
-
-          const [, implementation] = foundImplementation;
-          const httpImplementation = implementation;
-          const output = await httpImplementation(validatedBody);
-
-          return new Response(JSON.stringify(output), {
-            status: 200,
-            headers
-          });
-        }
-
-        if (route.type === "event") {
-          const foundImplementation = getEntries(implementations).find(([routeName]) => {
-            return `/${String(routeName)}` === url.pathname;
-          });
-
-          if (!foundImplementation) {
+          if (!foundRoute) {
             headers.set("Content-Type", "application/json");
 
-            return new Response(JSON.stringify({ error: `Implementation not found for route ${url.pathname}` }), {
-              status: 404,
+            return new Response(JSON.stringify({ error: "route not found" }), {
+              headers,
+              status: 404
+            });
+          }
+
+          const [, route] = foundRoute;
+
+          if (route.type === "http") {
+            headers.set("Content-Type", "application/json");
+
+            const body = await request.json();
+            const validatedBody = route.input.parse(typeof body === "string" ? jsonParseOr(null, body) : body);
+
+            const foundImplementation = getEntries(implementations).find(([routeName]) => {
+              return `/${String(routeName)}` === url.pathname;
+            });
+
+            if (!foundImplementation) {
+              return new Response(JSON.stringify({ error: "Implementation not found" }), {
+                status: 404,
+                headers
+              });
+            }
+
+            const [, implementation] = foundImplementation;
+            const httpImplementation = implementation;
+            const output = await httpImplementation(validatedBody);
+
+            return new Response(JSON.stringify(output), {
+              status: 200,
               headers
             });
           }
 
-          const [, implementation] = foundImplementation;
-          const eventImplementation = implementation;
+          if (route.type === "event") {
+            const foundImplementation = getEntries(implementations).find(([routeName]) => {
+              return `/${String(routeName)}` === url.pathname;
+            });
 
-          const stream = new ReadableStream({
-            start(controller) {
-              eventImplementation(async (output) => {
-                const validatedOutput = await route.output.parse(typeof output === "string" ? jsonParseOr(null, output) : output);
-                controller.enqueue(`event: message\ndata: ${JSON.stringify(validatedOutput)}\n\n`);
+            if (!foundImplementation) {
+              headers.set("Content-Type", "application/json");
+
+              return new Response(JSON.stringify({ error: `Implementation not found for route ${url.pathname}` }), {
+                status: 404,
+                headers
               });
             }
-          });
 
-          headers.set("Content-Type", "text/event-stream");
-          headers.set("Connection", "keep-alive");
-          headers.set("Cache-Control", "no-cache");
+            const [, implementation] = foundImplementation;
+            const eventImplementation = implementation;
 
-          return new Response(stream, {
-            status: 200,
+            const stream = new ReadableStream({
+              start(controller) {
+                eventImplementation(async (output) => {
+                  const validatedOutput = await route.output.parse(typeof output === "string" ? jsonParseOr(null, output) : output);
+                  controller.enqueue(`event: message\ndata: ${JSON.stringify(validatedOutput)}\n\n`);
+                });
+              }
+            });
+
+            headers.set("Content-Type", "text/event-stream");
+            headers.set("Connection", "keep-alive");
+            headers.set("Cache-Control", "no-cache");
+
+            return new Response(stream, {
+              status: 200,
+              headers
+            });
+          }
+
+          return new Response(JSON.stringify({ error: "Type not found" }), {
+            status: 404,
             headers
           });
-        }
 
-        return new Response(JSON.stringify({ error: "Type not found" }), {
-          status: 404,
-          headers
-        });
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
+
+          return new Response(JSON.stringify({ error: errorMessage }), {
+            headers,
+            status: 500,
+          });
+        }
       });
 
       return adapter.create();
