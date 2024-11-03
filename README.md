@@ -38,7 +38,7 @@ See [`SECURITY.md`](./SECURITY.md).
 
 See [`TODO.md`](./TODO.md).
 
-## Why
+## Features
 
 ### Scalability
 
