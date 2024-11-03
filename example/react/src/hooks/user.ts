@@ -6,7 +6,8 @@ import { CancelError } from '@superblue/core';
 
 export const useUser = () => {
   const { sendNotification } = useNotification();
-
+  const firstnameRef = useRef<HTMLInputElement>();
+  const lastnameRef = useRef<HTMLInputElement>();
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [users, setUsers] = useState<Users>([]);
@@ -15,6 +16,14 @@ export const useUser = () => {
 
   const getUsersAbortController = useRef(new AbortController());
   const createUserAbortController = useRef(new AbortController());
+
+  const focusFirstname = useCallback(() => {
+    firstnameRef.current?.focus();
+  }, []);
+
+  const focusLastname = useCallback(() => {
+    lastnameRef.current?.focus();
+  }, []);
 
   const cancelGetUsers = useCallback(() => {
     getUsersAbortController.current.abort();
@@ -85,7 +94,9 @@ export const useUser = () => {
       ((): void => {
         switch (response.status) {
           case "SUCCESS":
-            setMessage(response.message);
+            setLastname("");
+            setFirstname("");
+            focusFirstname();
             getUsers();
             return
 
@@ -95,22 +106,27 @@ export const useUser = () => {
 
           case "FIRSTNAME_EMPTY":
             setError("First name should not be empty.");
+            focusFirstname();
             return
 
           case "FIRSTNAME_TOO_LONG":
             setError("First name should be no more than 50 characters.");
+            focusFirstname();
             return
 
           case "LASTNAME_EMPTY":
             setError("Last name should not be empty.");
+            focusLastname();
             return
 
           case "LASTNAME_TOO_LONG":
             setError("Last name should be no more than 50 characters.");
+            focusLastname();
             return
 
           case "USER_ALREADY_EXISTS":
             setError("User already exist.");
+            focusFirstname();
             return
 
           case "UNEXPECTED_ERROR":
@@ -125,7 +141,7 @@ export const useUser = () => {
       const errorMessage = error instanceof Error ? error.message : String(error);
       setError(`Unexpected error: ${errorMessage}`);
     }
-  }, [firstname, getUsers, lastname]);
+  }, [firstname, focusFirstname, focusLastname, getUsers, lastname]);
 
   useEffect(() => {
     getUsers();
@@ -154,6 +170,8 @@ export const useUser = () => {
   return {
     lastname,
     firstname,
+    lastnameRef,
+    firstnameRef,
     error,
     message,
     users,

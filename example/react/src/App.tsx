@@ -17,6 +17,10 @@ import { Header } from "./components/header";
 
 function App() {
   const {
+    firstnameError,
+    lastnameError,
+    firstnameRef,
+    lastnameRef,
     createUser,
     error,
     firstname,
@@ -55,12 +59,18 @@ function App() {
               label="First Name"
               type="text"
               value={firstname}
-              onChange={updateFirstname} />
+              onChange={updateFirstname}
+              inputRef={firstnameRef}
+              error={!!firstnameError}
+              helperText={firstnameError} />
             <TextField
               type="text"
               label="Last Name"
               value={lastname}
-              onChange={updateLastname} />
+              onChange={updateLastname}
+              inputRef={lastnameRef}
+              error={!!lastnameError}
+              helperText={lastnameError} />
             <Button
               variant="contained"
               sx={{ alignSelf: "center" }}
