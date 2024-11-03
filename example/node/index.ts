@@ -19,4 +19,9 @@ const server = createServer({
   }
 });
 
-server.start({ port: 8000, host: "0.0.0.0"});
+const port = 8000;
+const host = "0.0.0.0"
+
+await server.start({ host, port });
+
+console.log(`Server started on http://${host}:${port}`);
