@@ -1,5 +1,3 @@
-import { z, ZodSchema } from "zod";
-
 export class CancelError extends Error {
   public override name = "CancelError";
 }
@@ -44,26 +42,30 @@ export class InformationalError extends Error {
   }
 }
 
-export interface HttpRoute<Input extends ZodSchema, Output extends ZodSchema> {
+type Validator<Value> = (value: unknown) => Value
+
+export interface HttpRoute<Input, Output> {
   type: "http",
-  input: Input,
-  output: Output
+  input: Validator<Input>,
+  output: Validator<Output>
 }
 
-export type HttpImplementation<Input extends ZodSchema, Output extends ZodSchema> = (input: z.infer<Input>) => Promise<z.infer<Output>>
+export type HttpImplementation<Input, Output> = (input: Input) => Promise<Output>
 
-export type CreateHttpImplementation<Input extends ZodSchema, Output extends ZodSchema> = (implementation: HttpImplementation<Input, Output>) => HttpImplementation<Input, Output>
+export type CreateHttpImplementation<Input, Output> = (implementation: HttpImplementation<Input, Output>) => HttpImplementation<Input, Output>
 
-export interface EventRoute<Output extends ZodSchema> {
+export interface EventRoute<Output> {
   type: "event",
-  output: Output
+  output: Validator<Output>
 }
 
-export type EventImplementation<Output extends ZodSchema> = (send: (output: z.infer<Output>) => void) => void;
+export type EventImplementation<Output> = (send: (output: Output) => void) => void;
 
-export type CreateEventImplementation<Output extends ZodSchema> = (implementation: EventImplementation<Output>) => EventImplementation<Output>
+export type CreateEventImplementation<Output> = (implementation: EventImplementation<Output>) => EventImplementation<Output>
 
-export type Implementations<Routes extends Record<string, HttpRoute<ZodSchema, ZodSchema> | EventRoute<ZodSchema>>> = {
+export type Route<Input, Output> = HttpRoute<Input, Output> | EventRoute<Output>
+
+export type Implementations<Routes extends Record<string, Route<unknown, unknown>>> = {
   [RouteName in keyof Routes]: Routes[RouteName] extends HttpRoute<infer Input, infer Output>
   ? HttpImplementation<Input, Output>
   : Routes[RouteName] extends EventRoute<infer Output>
@@ -71,11 +73,11 @@ export type Implementations<Routes extends Record<string, HttpRoute<ZodSchema, Z
   : never
 }
 
-export type HttpClient<Input extends ZodSchema, Output extends ZodSchema> = (options: { input: z.infer<Input>, signal?: AbortSignal }) => Promise<CancelError | InformationalError | RedirectError | ClientError | ServerError | UnexpectedError | z.infer<Output>>
+export type HttpClient<Input, Output> = (options: { input: Input, signal?: AbortSignal }) => Promise<CancelError | InformationalError | RedirectError | ClientError | ServerError | UnexpectedError | Output>
 
-export type EventClient<Output extends ZodSchema> = (onEvent: (output: z.infer<Output>) => void) => () => void
+export type EventClient<Output> = (onEvent: (output: Output) => void) => () => void
 
-export type Client<Routes extends Record<string, HttpRoute<ZodSchema, ZodSchema> | EventRoute<ZodSchema>>> = {
+export type Client<Routes extends Record<string, HttpRoute<unknown, unknown> | EventRoute<unknown>>> = {
   [RouteName in keyof Routes]: Routes[RouteName] extends HttpRoute<infer Input, infer Output>
   ? HttpClient<Input, Output>
   : Routes[RouteName] extends EventRoute<infer Output>
@@ -93,7 +95,7 @@ export interface ClientAdapter {
   subscribe: (options: { url: string }) => Subscriber
 }
 
-export type CreateClient<Routes extends Record<string, HttpRoute<ZodSchema, ZodSchema> | EventRoute<ZodSchema>>> = (options: { server: string, adapter: ClientAdapter }) => Client<Routes>
+export type CreateClient<Routes extends Record<string, Route<unknown, unknown>>> = (options: { server: string, adapter: ClientAdapter }) => Client<Routes>
 
 export interface ServerAdapter {
   onRequest: (callback: (request: Request) => Promise<Response>) => void,
@@ -106,9 +108,9 @@ export interface Server {
   start: (options: { port: number, host: string }) => Promise<ServerCloseFunction>
 }
 
-export type CreateServer<Routes extends Record<string, HttpRoute<ZodSchema, ZodSchema> | EventRoute<ZodSchema>>> = (options: { adapter: ServerAdapter, implementations: Implementations<Routes>  }) => Server
+export type CreateServer<Routes extends Record<string, Route<unknown, unknown>>> = (options: { adapter: ServerAdapter, implementations: Implementations<Routes>  }) => Server
 
-export interface Application<Routes extends Record<string, HttpRoute<ZodSchema, ZodSchema> | EventRoute<ZodSchema>>> {
+export interface Application<Routes extends Record<string, Route<unknown, unknown>>> {
   createClient: CreateClient<Routes>,
   createServer: CreateServer<Routes>
 }
@@ -125,14 +127,14 @@ export function jsonParseOr<Value>(fallback: Value, text: string): Value {
   }
 }
 
-export function createApplication<Routes extends Record<string, HttpRoute<ZodSchema, ZodSchema> | EventRoute<ZodSchema>>>({ routes }: { routes: Routes}): Application<Routes> {
+export function createApplication<Routes extends Record<string, Route<unknown, unknown>>>({ routes }: { routes: Routes}): Application<Routes> {
   return {
     createClient: (({ adapter, server }) => {
-      return Object.fromEntries(Object.entries(routes).map(([routeName, route]: [keyof Routes, HttpRoute<ZodSchema, ZodSchema> | EventRoute<ZodSchema>]) => {
+      return Object.fromEntries(Object.entries(routes).map(([routeName, route]: [keyof Routes, Route<unknown, unknown>]) => {
         if (route.type === "http") {
-          const client: HttpClient<ZodSchema, ZodSchema> = async ({ input, signal }) => {
+          const client: HttpClient<unknown, unknown> = async ({ input, signal }) => {
             try {
-              const validatedInput = route.input.parse(input);
+              const validatedInput = route.input(input);
               const body = JSON.stringify(validatedInput);
 
               const responseFromAdapter = await adapter.request({
@@ -162,7 +164,7 @@ export function createApplication<Routes extends Record<string, HttpRoute<ZodSch
               }
 
               const json = await responseFromAdapter.json();
-              const validatedOutput = route.output.parse(json);
+              const validatedOutput = route.output(json);
 
               return validatedOutput;
             } catch (error) {
@@ -181,11 +183,11 @@ export function createApplication<Routes extends Record<string, HttpRoute<ZodSch
           return [routeName, client];
         }
 
-        const client: EventClient<ZodSchema> = (onEvent) => {
+        const client: EventClient<unknown> = (onEvent) => {
           const subscription = adapter.subscribe({ url: `${server}/${String(routeName)}` });
 
           subscription.onEvent(data => {
-            const validatedOutput = route.output.parse(typeof data === "string" ? jsonParseOr(null, data) : data);
+            const validatedOutput = route.output(typeof data === "string" ? jsonParseOr(null, data) : data);
             onEvent(validatedOutput);
           });
 
@@ -221,7 +223,7 @@ export function createApplication<Routes extends Record<string, HttpRoute<ZodSch
             headers.set("Content-Type", "application/json");
 
             const body = await request.json();
-            const validatedBody = route.input.parse(typeof body === "string" ? jsonParseOr(null, body) : body);
+            const validatedBody = route.input(typeof body === "string" ? jsonParseOr(null, body) : body);
 
             const foundImplementation = getEntries(implementations).find(([routeName]) => {
               return `/${String(routeName)}` === url.pathname;
@@ -235,7 +237,7 @@ export function createApplication<Routes extends Record<string, HttpRoute<ZodSch
             }
 
             const [, implementation] = foundImplementation;
-            const httpImplementation = implementation;
+            const httpImplementation = implementation as HttpImplementation<unknown, unknown>;
             const output = await httpImplementation(validatedBody);
 
             return new Response(JSON.stringify(output), {
@@ -264,7 +266,7 @@ export function createApplication<Routes extends Record<string, HttpRoute<ZodSch
             const stream = new ReadableStream({
               start(controller) {
                 eventImplementation(async (output) => {
-                  const validatedOutput = await route.output.parse(typeof output === "string" ? jsonParseOr(null, output) : output);
+                  const validatedOutput = await route.output(typeof output === "string" ? jsonParseOr(null, output) : output);
                   controller.enqueue(`event: message\ndata: ${JSON.stringify(validatedOutput)}\n\n`);
                 });
               }
@@ -300,7 +302,7 @@ export function createApplication<Routes extends Record<string, HttpRoute<ZodSch
   };
 }
 
-export const createHttpRoute = <Input extends ZodSchema, Output extends ZodSchema>({ input, output }: { input: Input, output: Output }): [HttpRoute<Input, Output>, CreateHttpImplementation<Input, Output>] => {
+export const createHttpRoute = <Input, Output>({ input, output }: { input: Validator<Input>, output: Validator<Output> }): [HttpRoute<Input, Output>, CreateHttpImplementation<Input, Output>] => {
   const route: HttpRoute<Input, Output> = {
     type: "http",
     input,
@@ -315,7 +317,7 @@ export const createHttpRoute = <Input extends ZodSchema, Output extends ZodSchem
   ];
 };
 
-export function createEventRoute<Output extends ZodSchema>({ output }: { output: Output }): [EventRoute<Output>, CreateEventImplementation<Output>] {
+export function createEventRoute<Output>({ output }: { output: Validator<Output> }): [EventRoute<Output>, CreateEventImplementation<Output>] {
   const route: EventRoute<Output> = {
     type: "event",
     output
@@ -328,5 +330,3 @@ export function createEventRoute<Output extends ZodSchema>({ output }: { output:
     implement
   ];
 }
-
-export * from "zod";
