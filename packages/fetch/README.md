@@ -78,15 +78,20 @@ If you didn't yet, we highly suggest you start off by reading the documentation 
 This is the function that will allow you to create the client-side of your application created using [`@superblue/core`](../core).
 
 ```typescript
-import { createApplication, createHttpRoute, z } from "@superblue/core";
+import { createApplication, createHttpRoute } from "@superblue/core";
+import { z } from "zod";
 
 const [ createUserRoute, implementCreateUserRoute ] = createHttpRoute({
-  input: z.object({
-    firstname: z.string()
-  }),
-  output: z.object({
-    identifier: z.string()
-  })
+  input: value => {
+    return z.object({
+      firstname: z.string()
+    }).parse(value);
+  },
+  output: value => {
+    return z.object({
+      identifier: z.string()
+    }).parse(value);
+  }
 });
 
 const { createClient } = createApplication({
@@ -103,15 +108,20 @@ createClient({
 Creating a client needs at least two informations. The first one being the server to connect. This is done so that you can create multiple clients, connecting to multiple servers with redundancy.
 
 ```typescript
-import { createApplication, createHttpRoute, z } from "@superblue/core";
+import { createApplication, createHttpRoute } from "@superblue/core";
+import { z } from "zod";
 
 const [ createUserRoute, implementCreateUserRoute ] = createHttpRoute({
-  input: z.object({
-    firstname: z.string()
-  }),
-  output: z.object({
-    identifier: z.string()
-  })
+  input: value => {
+    return z.object({
+      firstname: z.string()
+    }).parse(value);
+  },
+  output: value => {
+    return z.object({
+      identifier: z.string()
+    }).parse(value);
+  }
 });
 
 const { createClient } = createApplication({
@@ -132,16 +142,21 @@ An adapter is simply an implementation of the way HTTP requests are made.
 Fortunately, you don't have to write your own, you can simply use the one provided by this library which implements the Web API Fetch, which is now widely used in all major browsers and should work seamlessly between all of your customers' browser.
 
 ```typescript
-import { createApplication, createHttpRoute, z } from "@superblue/core";
+import { createApplication, createHttpRoute } from "@superblue/core";
+import { z } from "zod";
 import { createFetchAdapter } from "@superblue/fetch";
 
 const [ createUserRoute, implementCreateUserRoute ] = createHttpRoute({
-  input: z.object({
-    firstname: z.string()
-  }),
-  output: z.object({
-    identifier: z.string()
-  })
+  input: value => {
+    return z.object({
+      firstname: z.string()
+    }).parse();
+  },
+  output: value => {
+    return z.object({
+      identifier: z.string()
+    }).parse(value);
+  }
 });
 
 const { createClient } = createApplication({
@@ -159,16 +174,21 @@ createClient({
 Once this has been all setup, you can grab the client that is returned by the `createClient` function.
 
 ```typescript
-import { createApplication, createHttpRoute, z } from "@superblue/core";
+import { createApplication, createHttpRoute } from "@superblue/core";
+import { z } from "zod";
 import { createFetchAdapter } from "@superblue/fetch";
 
 const [ createUserRoute, implementCreateUserRoute ] = createHttpRoute({
-  input: z.object({
-    firstname: z.string()
-  }),
-  output: z.object({
-    identifier: z.string()
-  })
+  input: value => {
+    return z.object({
+      firstname: z.string()
+    }).parse(value);
+  },
+  output: value => {
+    return z.object({
+      identifier: z.string()
+    }).parse(value);
+  }
 });
 
 const { createClient } = createApplication({
@@ -188,16 +208,21 @@ This is what you'll use in your client applications, like a React, Vue, Angular 
 `client` here is an object that contains all of your route names defined in the `createApplication` function, so you can start and call it if you want.
 
 ```typescript
-import { createApplication, createHttpRoute, z } from "@superblue/core";
+import { createApplication, createHttpRoute } from "@superblue/core";
+import { z } from "zod";
 import { createFetchAdapter } from "@superblue/fetch";
 
 const [ createUserRoute, implementCreateUserRoute ] = createHttpRoute({
-  input: z.object({
-    firstname: z.string()
-  }),
-  output: z.object({
-    identifier: z.string()
-  })
+  input: value => {
+    return z.object({
+      firstname: z.string()
+    }).parse(value);
+  },
+  output: value => {
+    return z.object({
+      identifier: z.string()
+    }).parse(value);
+  }
 });
 
 const { createClient } = createApplication({
