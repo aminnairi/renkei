@@ -90,22 +90,29 @@ touch example/shared/index.ts
 Initialize a new application to be consumed by any client or server implementation.
 
 ```ts
-import { createApplication, createHttpRoute, createEventRoute, z } from "@superblue/core";
+import { createApplication, createHttpRoute, createEventRoute } from "@superblue/core";
+import { z } from "zod";
 
 export const [ createUserRoute, implementCreateUser ] = createHttpRoute({
-  input: z.object({
-    firstname: z.string(),
-    lastname: z.string()
-  }),
-  output: z.object({
-    identifier: z.string()
-  })
+  input: value => {
+    return z.object({
+      firstname: z.string(),
+      lastname: z.string()
+    }).parse(value);
+  },
+  output: value => {
+    return z.object({
+      identifier: z.string()
+    }).parse(value);
+  }
 });
 
 export const [ userCreatedRoute, implementUserCreated ] = createEventRoute({
-  output: z.object({
-    identifier: z.string()
-  })
+  output: value => {
+    return z.object({
+      identifier: z.string()
+    }).parse(value);
+  }
 });
 
 export const { createClient, createServer } = createApplication({
@@ -128,35 +135,47 @@ One of which being HTTP routes.
 
 A HTTP route is simply the definition of a route that should receive HTTP requests, and send back an HTTP response.
 
-In order to know what we will receive from the request, and what to send back as a response, we use `zod` in order to define the schema for the request (input) and response (output).
+In order to know what we will receive from the request, and what to send back as a response, we use `zod` here in order to define the schema for the request (input) and response (output).
 
 ```typescript
-import { createHttpRoute, z } from "@superblue/core";
+import { createHttpRoute } from "@superblue/core";
+import { z } from "zod";
 
 createHttpRoute({
-  input: z.object({
-    firstname: z.string()
-  }),
-  output: z.object({
-    identifier: z.string()
-  })
+  input: value => {
+    return z.object({
+      firstname: z.string()
+    }).parse(value);
+  },
+  output: value => {
+    return z.object({
+      identifier: z.string()
+    }).parse(value);
+  }
 });
 ```
 
-Note that you can import everything from the `zod` library since `superblue` exports everything from `zod` and it is a direct dependency. If you need to know which version of `zod` is used, look at the [`package.json`](./package.json), in the `dependencies` object looking for `zod`.
+Notice here that we are using Zod in order to validate the data: you can use any library that you want from here, it only needs to parse the value that will be received from the sevrer or from the clients to be validated and adds an extra layer of security.
+
+We intend on releasing soon a library that will handle the validation for you, as well as providing safe schemas to be used for serialization since this library serializes its data using JSON, and this library might not work with all schemas offered by Zod.
 
 When executing this function, you get back two functions, returned in an array that you can then destructure.
 
 ```typescript
-import { createHttpRoute, z } from "@superblue/core";
+import { createHttpRoute } from "@superblue/core";
+import { z } from "zod";
 
 const [ createUserRoute, implementCreateUserRoute ] = createHttpRoute({
-  input: z.object({
-    firstname: z.string()
-  }),
-  output: z.object({
-    identifier: z.string()
-  })
+  input: value => {
+    return z.object({
+      firstname: z.string()
+    }).parse(value);
+  },
+  output: value => {
+    return z.object({
+      identifier: z.string()
+    }).parse(value);
+  }
 });
 ```
 
