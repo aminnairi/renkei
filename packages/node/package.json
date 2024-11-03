@@ -4,6 +4,9 @@
   "name": "@superblue/node",
   "version": "0.1.0",
   "description": "Node.js adapters for superblue",
+  "scripts": {
+    "lint": "tsc --noEmit"
+  },
   "dependencies": {
     "zod": "3.23.8"
   },
