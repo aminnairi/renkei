@@ -4,6 +4,7 @@
 - Add linting routines in the workflow created above
 - Add a audit routine in the workflow created above for all packages
 - Publish the library
+- Add a docker compose infrastructure
 
 ## @superblue/core
 
@@ -40,3 +41,8 @@
 - Make the cors checking stricter
 - Add the ability to rate limit the requests
 - Add a static file server
+
+## @example/node
+
+- Add Drizzle ORM
+- Add an SQLite database
