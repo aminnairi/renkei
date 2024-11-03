@@ -2,8 +2,8 @@
 
 ## Requirements
 
-- Node
-- NPM
+- [Node](https://nodejs.org)
+- [NPM](https://npmjs.com)
 
 ## Usage
 
