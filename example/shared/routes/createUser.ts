@@ -1,11 +1,12 @@
-import { createHttpRoute, z } from "@superblue/core";
+import { createHttpRoute } from "@superblue/core";
+import { z } from "zod";
 
 export const [createUserRoute, implementCreateUser] = createHttpRoute({
-  input: z.object({
+  input: (value) => z.object({
     firstname: z.string(),
     lastname: z.string()
-  }),
-  output: z.discriminatedUnion("status", [
+  }).parse(value),
+  output: value => z.discriminatedUnion("status", [
     z.object({
       status: z.literal("SUCCESS"),
       message: z.string()
@@ -32,5 +33,5 @@ export const [createUserRoute, implementCreateUser] = createHttpRoute({
     z.object({
       status: z.literal("USER_ALREADY_EXISTS")
     })
-  ])
+  ]).parse(value)
 })
