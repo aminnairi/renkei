@@ -2,7 +2,16 @@
 
 Effortless type-safe communication between client and server
 
-## Usage
+## Installation
+
+Create your project's folder.
+
+```bash
+mkdir my-awesome-project
+cd my-awesome-project
+```
+
+Create the main `package.json` for defining the workspace.
 
 ```bash
 touch package.json
@@ -10,6 +19,7 @@ touch package.json
 
 ```json
 {
+  "private": true,
   "workspaces": [
     "example/shared",
     "example/client",
@@ -18,8 +28,15 @@ touch package.json
 }
 ```
 
+Create the first workspace (note that other workspace's creation are defined in [`@superblue/fetch`](../fetch) and [`@superblue/node`](../node)).
+
 ```bash
 mkdir -p example/shared
+```
+
+Create the shared workspace's `package.json`.
+
+``` bash
 touch example/shared/package.json
 ```
 
@@ -31,9 +48,21 @@ touch example/shared/package.json
 }
 ```
 
+Install the workspaces.
+
 ```bash
 npm install
+```
+
+Install `@superblue/core` for the `shared` workspace.
+
+```bash
 npm --workspace @example/node install --save --save-exact @superblue/core
+```
+
+Create the TypeScript configuration for the `shared` workspace.
+
+```bash
 touch example/shared/tsconfig.json
 ```
 
@@ -45,9 +74,15 @@ touch example/shared/tsconfig.json
 }
 ```
 
+This is the mandatory option for working properly with `@superblue/core`, you can add other options as well.
+
+Create the main entrypoint for the `shared` workspace.
+
 ```bash
 touch example/shared/index.ts
 ```
+
+Initialize a new application to be consumed by any client or server implementation.
 
 ```ts
 import { createApplication, createHttpRoute, createEventRoute, z } from "@superblue/core";
@@ -76,9 +111,11 @@ export const { createClient, createServer } = createApplication({
 });
 ```
 
-## API
+## What's next
 
-### createHttpRoute
+Choose and initialize a client, like [`@superblue/fetch`](../fetch), and a server, like [`@superblue/node`](../node).
+
+## API
 
 With Superblue, you have access to two types of routes.
 
@@ -122,7 +159,7 @@ The `createUserRoute` will be used later in the `createApplication` function exp
 
 The `implementCreateUserRoute` can be used with any server adapter, as described in the [`@superblue/node`](../node) server adapter library for instance.
 
-### createApplication
+Next, you have to use these route in the application definition using the `createApplication` function.
 
 This function let's you create the core of your application.
 
@@ -152,7 +189,7 @@ const { createClient, createServer } = createApplication({
 
 Since the `createApplication` is simply the shell for your entire application, it separates the route schema, from the client implementation ([`@superblue/fetch`](../fetch) for instance) and the server implementation ([`@superblue/node`](../node) for instance).
 
-That's it, you know know how to create your first `superblue` application. Don't forget to read the documentation below to finish setting up your application in order to create your seamless client/server communication environment!
+That's it, you know know how to create your first `superblue` application. Don't forget to read the documentation for the packages above to finish setting up your application in order to create your seamless client/server communication environment!
 
 ## License
 
