@@ -168,6 +168,12 @@ export function createNodeHttpServerAdapter({ clients = [], compression = noComp
         };
 
         try {
+          if (request.method === "OPTIONS") {
+            response.writeHead(200, corsHeaders);
+            response.end();
+            return;
+          }
+
           const body = await getBody(request);
           const json = jsonParseOr(null, body);
           const callbackResponse = await callback(new Request(`${request.headers.origin}${request.url ?? ""}`, {
@@ -187,7 +193,7 @@ export function createNodeHttpServerAdapter({ clients = [], compression = noComp
 
           readableBody.pipe(compressedStream).pipe(response);
         } catch (error) {
-          response.writeHead(200, {
+          response.writeHead(500, {
             "Content-Type": "application/json",
             ...corsHeaders
           });
