@@ -7,13 +7,7 @@
 
 ## @superblue/core
 
-- Add a custom error for when the status code is wrong
 - Add a custom error for when the network is down
-- Add a custom error for when the request is canceled
-- Return error instead of throwing them for both the client & server
-- Add an example explaining how to create its own server adapter
-- Add an example explaining how to create its own client adapter
-- Make the `createServer` function return whatever is the type of the output of the `ServerAdapter` used 
 - Add unit tests
 - Add badges
 - Add documentation about how to create a custom `ServerAdapter`
@@ -43,3 +37,7 @@
 
 - Add Drizzle ORM
 - Add an SQLite database
+
+## @example/react
+
+- Separate the `getUsers` logic from the `createUser` logic and the `userCreated` logic
