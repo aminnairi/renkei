@@ -58,7 +58,7 @@ JavaScript offers flexibility but lacks typing guarantees, making large-scale pr
 - **Manual Validation**: Without static typing, request and response payloads require complex, manual validation, adding bug-prone code to each route.
 - **Repetitive Code**: Handling requests and responses in a classic JavaScript system involves duplicative code that increases technical debt and reduces code readability.
 
-`superblue` leverages Zod for static typing and runtime validation, ensuring each request and response adheres to defined schemas. This approach reduces errors, clarifies route contracts, and improves maintainability.
+`superblue` validates each and every one of your requests, from and to the server & clietn, ensuring each request and response adheres to defined schemas. This approach reduces errors, clarifies route contracts, and improves maintainability.
 
 ### Errors are hard to handle
 
@@ -77,7 +77,7 @@ With `superblue`, error handling becomes more manageable, consistent, and secure
 
 tRPC is a popular library in the TypeScript community for building APIs with type-safe client consumption. It has gained traction in widely used stacks like T3 and Sidebase and is now a well-established, battle-tested choice. In contrast, Superblue is a newer library offering a similar advantage: end-to-end type safety, allowing developers to write APIs faster and with greater confidence by minimizing the risk of breaking changes.
 
-However, tRPC and Superblue operate quite differently. Superblue relies heavily on Zod for schema definitions, which are then used both on the client and server to validate data, while tRPC is more flexible with schema tooling, allowing you to choose your preferred schema library for type-checking.
+However, tRPC and Superblue operate quite differently. Superblue relies on schema definitions, which are then used both on the client and server to validate data, while tRPC is more flexible with schema tooling, allowing you to choose your preferred schema library for type-checking.
 
 On the client side, tRPC doesn’t enforce any special validation with the server; it simply imports types that guide data structures for requests, leaving it up to the server to validate incoming data against the schema. Superblue, by comparison, validates data both client- and server-side, adding a layer of runtime checks. This dual validation ensures that even if a server response differs unexpectedly (e.g., due to a crash or unexpected error), the client will still validate the data before using it, providing a bit more safety at the cost of some runtime overhead.
 
