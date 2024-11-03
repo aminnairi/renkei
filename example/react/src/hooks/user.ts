@@ -40,6 +40,11 @@ export const useUser = () => {
         signal: getUsersAbortController.current.signal
       });
 
+      if (receivedUsers instanceof Error) {
+        setError("Something went wrong, please try again later.");
+        return;
+      }
+
       setUsers(receivedUsers);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
@@ -60,6 +65,11 @@ export const useUser = () => {
         },
         signal: createUserAbortController.current.signal
       });
+
+      if (response instanceof Error) {
+        setError("Something went wrong, please try again later.");
+        return;
+      }
 
       ((): void => {
         switch (response.status) {
