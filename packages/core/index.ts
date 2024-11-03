@@ -1,5 +1,29 @@
 import { z, ZodSchema } from "zod";
 
+export class ClientError extends Error {
+  public override name = "ClientError";
+
+  public constructor(public readonly status: number, public readonly text: string) {
+    super();
+  }
+}
+
+export class ServerError extends Error {
+  public override name = "ServerError";
+
+  public constructor(public readonly status: number, public readonly text: string) {
+    super();
+  }
+}
+
+export class UnexpectedError extends Error {
+  public override name = "UnexpectedError";
+
+  public constructor(public override readonly message: string) {
+    super();
+  }
+}
+
 export interface HttpRoute<Input extends ZodSchema, Output extends ZodSchema> {
   type: "http",
   input: Input,
@@ -27,7 +51,7 @@ export type Implementations<Routes extends Record<string, HttpRoute<ZodSchema, Z
   : never
 }
 
-export type HttpClient<Input extends ZodSchema, Output extends ZodSchema> = (options: { input: z.infer<Input>, signal?: AbortSignal }) => Promise<z.infer<Output>>
+export type HttpClient<Input extends ZodSchema, Output extends ZodSchema> = (options: { input: z.infer<Input>, signal?: AbortSignal }) => Promise<ClientError | ServerError | UnexpectedError | z.infer<Output>>
 
 export type EventClient<Output extends ZodSchema> = (onEvent: (output: z.infer<Output>) => void) => () => void
 
@@ -45,7 +69,7 @@ export interface Subscriber {
 }
 
 export interface ClientAdapter {
-  request: (options: { url: string, body: string, signal?: AbortSignal | undefined }) => Promise<unknown>,
+  request: (options: { url: string, body: string, signal?: AbortSignal | undefined }) => Promise<Response>,
   subscribe: (options: { url: string }) => Subscriber
 }
 
@@ -87,17 +111,37 @@ export function createApplication<Routes extends Record<string, HttpRoute<ZodSch
       return Object.fromEntries(Object.entries(routes).map(([routeName, route]: [keyof Routes, HttpRoute<ZodSchema, ZodSchema> | EventRoute<ZodSchema>]) => {
         if (route.type === "http") {
           const client: HttpClient<ZodSchema, ZodSchema> = async ({ input, signal }) => {
-            const validatedInput = route.input.parse(input);
-            const body = JSON.stringify(validatedInput);
+            try {
+              const validatedInput = route.input.parse(input);
+              const body = JSON.stringify(validatedInput);
 
-            const output = await adapter.request({
-              url: `${server}/${String(routeName)}`,
-              body,
-              signal: signal
-            });
+              const responseFromAdapter = await adapter.request({
+                url: `${server}/${String(routeName)}`,
+                body,
+                signal: signal
+              });
 
-            const validatedOutput = route.output.parse(typeof output === "string" ? jsonParseOr(null, output) : output);
-            return validatedOutput;
+              if (responseFromAdapter.status >= 400 && responseFromAdapter.status <= 499) {
+                const text = await responseFromAdapter.text();
+                return new ClientError(responseFromAdapter.status, text);
+              }
+
+              if (responseFromAdapter.status >= 500 && responseFromAdapter.status <= 599) {
+                const text = await responseFromAdapter.text();
+                return new ServerError(responseFromAdapter.status, text);
+              }
+
+              const json = await responseFromAdapter.json();
+              const validatedOutput = route.output.parse(json);
+
+              return validatedOutput;
+            } catch (error) {
+              if (error instanceof Error) {
+                return new UnexpectedError(error.message);
+              }
+
+              return new UnexpectedError(String(error));
+            }
           };
 
           return [routeName, client];
