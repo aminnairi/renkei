@@ -1,5 +1,9 @@
 import { z, ZodSchema } from "zod";
 
+export class CancelError extends Error {
+  public override name = "CancelError";
+}
+
 export class ClientError extends Error {
   public override name = "ClientError";
 
@@ -67,7 +71,7 @@ export type Implementations<Routes extends Record<string, HttpRoute<ZodSchema, Z
   : never
 }
 
-export type HttpClient<Input extends ZodSchema, Output extends ZodSchema> = (options: { input: z.infer<Input>, signal?: AbortSignal }) => Promise<InformationalError | RedirectError | ClientError | ServerError | UnexpectedError | z.infer<Output>>
+export type HttpClient<Input extends ZodSchema, Output extends ZodSchema> = (options: { input: z.infer<Input>, signal?: AbortSignal }) => Promise<CancelError | InformationalError | RedirectError | ClientError | ServerError | UnexpectedError | z.infer<Output>>
 
 export type EventClient<Output extends ZodSchema> = (onEvent: (output: z.infer<Output>) => void) => () => void
 
@@ -163,6 +167,10 @@ export function createApplication<Routes extends Record<string, HttpRoute<ZodSch
               return validatedOutput;
             } catch (error) {
               if (error instanceof Error) {
+                if (error.name === "AbortError") {
+                  return new CancelError;
+                }
+
                 return new UnexpectedError(error.message);
               }
 
