@@ -56,9 +56,10 @@ export interface ServerAdapter {
   create: () => Server
 }
 
+type ServerCloseFunction = () => void
+
 export interface Server {
-  start: (options: { port: number, host: string }) => void,
-  stop: () => void
+  start: (options: { port: number, host: string }) => Promise<ServerCloseFunction>
 }
 
 export type CreateServer<Routes extends Record<string, HttpRoute<ZodSchema, ZodSchema> | EventRoute<ZodSchema>>> = (options: { adapter: ServerAdapter, implementations: Implementations<Routes>  }) => Server
