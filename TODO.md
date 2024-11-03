@@ -1,17 +1,9 @@
 # Todo
 
-- Add link to contributor covenant
-- Add a link to the security policy
-- Add some issue templates
-- Add a pull requests template
-- Add a security policy template
 - Add a workflow to build the packages
 - Add linting routines in the workflow created above
 - Add a audit routine in the workflow created above for all packages
 - Publish the library
-- Add the correction description for all `README.md` files of `packages`
-- Add links to the relevant requirements in all `README.md` files of `packages`
-- Create a hard link for the `CONTRIBUTING.md` and `LICENSE` files instead of soft links
 
 ## @superblue/core
 
@@ -44,3 +36,7 @@
 - Add an example explaining how to create its own compression strategy
 - Add integration tests
 - Add badges
+- Add security headers configuration
+- Make the cors checking stricter
+- Add the ability to rate limit the requests
+- Add a static file server
