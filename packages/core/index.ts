@@ -24,6 +24,22 @@ export class UnexpectedError extends Error {
   }
 }
 
+export class RedirectError extends Error {
+  public override name = "RedirectError";
+
+  public constructor(public readonly status: number, public readonly text: string) {
+    super();
+  }
+}
+
+export class InformationalError extends Error {
+  public override name = "InformationalError";
+
+  public constructor(public readonly status: number, public readonly text: string) {
+    super();
+  }
+}
+
 export interface HttpRoute<Input extends ZodSchema, Output extends ZodSchema> {
   type: "http",
   input: Input,
@@ -51,7 +67,7 @@ export type Implementations<Routes extends Record<string, HttpRoute<ZodSchema, Z
   : never
 }
 
-export type HttpClient<Input extends ZodSchema, Output extends ZodSchema> = (options: { input: z.infer<Input>, signal?: AbortSignal }) => Promise<ClientError | ServerError | UnexpectedError | z.infer<Output>>
+export type HttpClient<Input extends ZodSchema, Output extends ZodSchema> = (options: { input: z.infer<Input>, signal?: AbortSignal }) => Promise<InformationalError | RedirectError | ClientError | ServerError | UnexpectedError | z.infer<Output>>
 
 export type EventClient<Output extends ZodSchema> = (onEvent: (output: z.infer<Output>) => void) => () => void
 
@@ -121,9 +137,19 @@ export function createApplication<Routes extends Record<string, HttpRoute<ZodSch
                 signal: signal
               });
 
+              if (responseFromAdapter.status >= 100 && responseFromAdapter.status <= 199) {
+                const text = await responseFromAdapter.text();
+                return new InformationalError(responseFromAdapter.status, text);
+              }
+
               if (responseFromAdapter.status >= 400 && responseFromAdapter.status <= 499) {
                 const text = await responseFromAdapter.text();
                 return new ClientError(responseFromAdapter.status, text);
+              }
+
+              if (responseFromAdapter.status >= 300 && responseFromAdapter.status <= 399) {
+                const text = await responseFromAdapter.text();
+                return new RedirectError(responseFromAdapter.status, text);
               }
 
               if (responseFromAdapter.status >= 500 && responseFromAdapter.status <= 599) {
