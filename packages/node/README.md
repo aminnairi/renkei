@@ -90,15 +90,20 @@ After defined your routes using `createHttpRoute` or `createEventRoute` and plug
 For that, you can use the `createServer` function.
 
 ```typescript
-import { createApplication, createHttpRoute, z } from "@superblue/core";
+import { createApplication, createHttpRoute } from "@superblue/core";
+import { z } from "zod";
 
 const [ createUserRoute, implementCreateUserRoute ] = createHttpRoute({
-  input: z.object({
-    firstname: z.string()
-  }),
-  output: z.object({
-    identifier: z.string()
-  })
+  input: value => {
+    return z.object({
+      firstname: z.string()
+    }).parse(value);
+  },
+  output: value => {
+    return z.object({
+      identifier: z.string()
+    }).parse(value);
+  }
 });
 
 const { createServer } = createApplication({
@@ -115,15 +120,20 @@ This function takes one argument, which is an object defining the options for th
 The first important thing to declare are concrete implementations of the routes that your created using the `createHttpRoute` or `createEventRoute` functions.
 
 ```typescript
-import { createApplication, createHttpRoute, z } from "@superblue/core";
+import { createApplication, createHttpRoute } from "@superblue/core";
+import { z } from "zod";
 
 const [ createUserRoute, implementCreateUserRoute ] = createHttpRoute({
-  input: z.object({
-    firstname: z.string()
-  }),
-  output: z.object({
-    identifier: z.string()
-  })
+  input: value => {
+    return z.object({
+      firstname: z.string()
+    }).parse(value);
+  },
+  output: value => {
+    return z.object({
+      identifier: z.string()
+    }).parse(value);
+  }
 });
 
 const { createServer } = createApplication({
@@ -148,16 +158,21 @@ These concrete implementations help separate the route definitions from the impl
 Once that is done, you need to choose, or create your own, adapter for serving requests. Fortunately, you don't have to do this by yourself since this library has already an adapter based on the `http` Node.js builtin library.
 
 ```typescript
-import { createApplication, createHttpRoute, z } from "@superblue/core";
+import { createApplication, createHttpRoute } from "@superblue/core";
 import { createNodeHttpServerAdpater } from "@superblue/node";
+import { z } from "zod";
 
 const [ createUserRoute, implementCreateUserRoute ] = createHttpRoute({
-  input: z.object({
-    firstname: z.string()
-  }),
-  output: z.object({
-    identifier: z.string()
-  })
+  input: value => {
+    return z.object({
+      firstname: z.string()
+    }).parse(value);
+  },
+  output: value => {
+    return z.object({
+      identifier: z.string()
+    }).parse(value);
+  }
 });
 
 const { createServer } = createApplication({
@@ -185,16 +200,21 @@ This adapter takes some options that may be important enough, depending on your 
 The first one is the clients that are connecting to your server.
 
 ```typescript
-import { createApplication, createHttpRoute, z } from "@superblue/core";
+import { createApplication, createHttpRoute } from "@superblue/core";
 import { createNodeHttpServerAdpater } from "@superblue/node";
+import { z } from "zod";
 
 const [ createUserRoute, implementCreateUserRoute ] = createHttpRoute({
-  input: z.object({
-    firstname: z.string()
-  }),
-  output: z.object({
-    identifier: z.string()
-  })
+  input: value => {
+    return z.object({
+      firstname: z.string()
+    }).parse(value);
+  },
+  output: value => {
+    return z.object({
+      identifier: z.string()
+    }).parse(value):
+  }
 });
 
 const { createServer } = createApplication({
@@ -224,16 +244,21 @@ The second information, that you can omit, is the compression strategy that you 
 By default, the strategy is set to `noCompression`.
 
 ```typescript
-import { createApplication, createHttpRoute, z } from "@superblue/core";
+import { createApplication, createHttpRoute } from "@superblue/core";
 import { createNodeHttpServerAdpater, noCompression } from "@superblue/node";
+import { z } from "zod";
 
 const [ createUserRoute, implementCreateUserRoute ] = createHttpRoute({
-  input: z.object({
-    firstname: z.string()
-  }),
-  output: z.object({
-    identifier: z.string()
-  })
+  input: value => {
+    return z.object({
+      firstname: z.string()
+    }).parse(value);
+  },
+  output: value => {
+    return z.object({
+      identifier: z.string()
+    }).parse(value);
+  }
 });
 
 const { createServer } = createApplication({
@@ -260,16 +285,21 @@ createServer({
 You can write your own `CompressionStrategy`, but fortunately, there are implementations for all major compression strategies supported by your browser such as `brotli`, `deflate` and `gzip`.
 
 ```typescript
-import { createApplication, createHttpRoute, z } from "@superblue/core";
+import { createApplication, createHttpRoute } from "@superblue/core";
 import { createNodeHttpServerAdpater, gzipCompression } from "@superblue/node";
+import { z } from "zod";
 
 const [ createUserRoute, implementCreateUserRoute ] = createHttpRoute({
-  input: z.object({
-    firstname: z.string()
-  }),
-  output: z.object({
-    identifier: z.string()
-  })
+  input: value => {
+    return z.object({
+      firstname: z.string()
+    }).parse(value);
+  },
+  output: value => {
+    return z.object({
+      identifier: z.string()
+    }).parse(value);
+  }
 });
 
 const { createServer } = createApplication({
@@ -300,16 +330,21 @@ As of today, I haven't understood why events that are compressed are not sent an
 But if you still want to compress your regular HTTP requests, but leave aside the events, you can also pass an option to the compression functions in order to blacklist some requests from the compression.
 
 ```typescript
-import { createApplication, createHttpRoute, z } from "@superblue/core";
+import { createApplication, createHttpRoute } from "@superblue/core";
 import { createNodeHttpServerAdpater, gzipCompression } from "@superblue/node";
+import { z } from "zod";
 
 const [ createUserRoute, implementCreateUserRoute ] = createHttpRoute({
-  input: z.object({
-    firstname: z.string()
-  }),
-  output: z.object({
-    identifier: z.string()
-  })
+  input: value => {
+    return z.object({
+      firstname: z.string()
+    }).parse(value);
+  },
+  output: value => {
+    return z.object({
+      identifier: z.string()
+    }).parse(value);
+  }
 });
 
 const { createServer } = createApplication({
@@ -342,16 +377,21 @@ Here, `text/event-stream` is the `Content-Type` header sent when sending events 
 Now, we can start our server! By providing a host and port, we can start our server listeining on whatever port and/or host we want, and we get a close function that we can use to close all current and future connections to the HTTP server at anytime.
 
 ```typescript
-import { createApplication, createHttpRoute, z } from "@superblue/core";
+import { createApplication, createHttpRoute } from "@superblue/core";
 import { createNodeHttpServerAdpater, gzipCompression } from "@superblue/node";
+import { z } from "zod";
 
 const [ createUserRoute, implementCreateUserRoute ] = createHttpRoute({
-  input: z.object({
-    firstname: z.string()
-  }),
-  output: z.object({
-    identifier: z.string()
-  })
+  input: value => {
+    return z.object({
+      firstname: z.string()
+    }).parse(value);
+  },
+  output: value => {
+    return z.object({
+      identifier: z.string()
+    }).parse(value);
+  }
 });
 
 const { createServer } = createApplication({
