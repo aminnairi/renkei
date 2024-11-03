@@ -13,9 +13,7 @@ export function createFetchAdapter(): ClientAdapter {
         }
       });
 
-      const json = await response.json();
-
-      return json;
+      return response;
     },
     subscribe: ({ url }) => {
       const eventSource = new EventSource(url);
