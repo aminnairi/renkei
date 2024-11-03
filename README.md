@@ -4,19 +4,19 @@ Effortless type-safe communication between client and server
 
 ## Packages
 
-Package | Description
----|---
-[`@superblue/core`](./packages/core) | Effortless type-safe communication between client and server
-[`@superblue/fetch`](./packages/fetch) | Web API Fetch adapter for superblue
-[`@superblue/node`](./packages/node) | Node.js adapter for superblue
+Package | Type | Description
+---|---|---
+[`@superblue/core`](./packages/core) | Core | Effortless type-safe communication between client and server
+[`@superblue/fetch`](./packages/fetch) | Client | Web API Fetch adapter for superblue
+[`@superblue/node`](./packages/node) | Server | Node.js adapter for superblue
 
 ## Example
 
-Example | Description
----|---
-[`@example/shared`](./example/shared/) | Shared code necessary for both the client and server
-[`@example/node`](./example/node/) | Node.js example using the builtin `http` library
-[`@example/react`](./example/react/) | React.js example using Vite.js and the `fetch` Web API
+Example | Type | Description
+---|---|---
+[`@example/shared`](./example/shared/) | Core | Shared code necessary for both the client and server
+[`@example/react`](./example/react/) | Client | React.js example using Vite.js and the `fetch` Web API
+[`@example/node`](./example/node/) | Server | Node.js example using the builtin `http` library
 
 ## License
 
