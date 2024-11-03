@@ -4,6 +4,8 @@
 - Add a audit routine in the workflow created above for all packages
 - Publish the library
 - Add a docker compose infrastructure
+- Create documentation using Docusaurus
+- Initiate the next naming change
 
 ## @superblue/core
 
@@ -13,6 +15,7 @@
 - Add documentation about how to create a custom `ServerAdapter`
 - Add documentation about how to create a custom `ClientAdapter`
 - Add documentation for `createEventRoute`
+- Better typing for the validated input and output, to be discriminated and returned as 400 errors from the server
 
 ## @superblue/fetch
 
@@ -41,3 +44,7 @@
 ## @example/react
 
 - Separate the `getUsers` logic from the `createUser` logic and the `userCreated` logic
+
+## @superblue/schema
+
+- Create a library that allows for using JSON-safe types for the validation of routes
