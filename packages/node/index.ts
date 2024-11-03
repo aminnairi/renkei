@@ -4,7 +4,7 @@ import { Transform, Readable, PassThrough } from "stream";
 import { createBrotliCompress, createDeflate, createGzip } from "zlib";
 
 interface CompressionMetadata {
-  compressionHeaders: { "Content-Encoding"?: "gzip" | "br" | "deflate" },
+  compressionHeaders: Record<string, string>,
   compressedStream: Transform
 }
 
@@ -48,11 +48,13 @@ export function gzipCompression({ exceptions = [] }: GzipCompressionOptions = {}
 
       const gzip = createGzip();
 
+      const compressionHeaders: Record<string, string> = {
+        "Content-Encoding": "gzip"
+      };
+
       return {
         compressedStream: gzip,
-        compressionHeaders: {
-          "Content-Encoding": "gzip"
-        }
+        compressionHeaders
       };
     }
   };
@@ -70,11 +72,13 @@ export function brotliCompression(): CompressionStrategy {
 
       const compressedStream = createBrotliCompress();
 
+      const compressionHeaders: Record<string, string> = {
+        "Content-Encoding": "br"
+      };
+
       return {
         compressedStream,
-        compressionHeaders: {
-          "Content-Encoding": "br"
-        }
+        compressionHeaders
       };
     }
   };
@@ -92,11 +96,13 @@ export function deflateCompression(): CompressionStrategy {
 
       const compressedStream = createDeflate();
 
+      const compressionHeaders: Record<string, string> = {
+        "Content-Encoding": "deflate"
+      };
+
       return {
         compressedStream,
-        compressionHeaders: {
-          "Content-Encoding": "deflate"
-        }
+        compressionHeaders
       };
     }
   };
