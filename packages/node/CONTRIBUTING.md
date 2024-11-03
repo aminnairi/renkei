@@ -42,3 +42,13 @@ This will start the application and listen to [`localhost:5173`](http://localhos
 ```bash
 npm -w example/react start
 ```
+
+## Sites
+
+### Documentation
+
+#### Start
+
+```bash
+npm -w sites/documentation start
+```
