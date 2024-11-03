@@ -1,8 +1,8 @@
 # superblue
 
-Effortless type-safe communication between client and server
+🤝 Effortless type-safe communication between client and server
 
-## Packages
+## 📦 Packages
 
 Package | Type | Description
 ---|---|---
@@ -18,29 +18,29 @@ Example | Type | Description
 [`@example/react`](./example/react/) | Client | React.js example using Vite.js and the `fetch` Web API
 [`@example/node`](./example/node/) | Server | Node.js example using the builtin `http` library
 
-## License
+## 📖 License
 
 See [`LICENSE`](./LICENSE).
 
-## Contributing
+## 🤔 Contributing
 
 See [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
-## Code of conduct
+## ☺ Code of conduct
 
 See [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md).
 
-## Security
+## 🔒 Security
 
 See [`SECURITY.md`](./SECURITY.md).
 
-## Todo
+## ✏ Todo
 
 See [`TODO.md`](./TODO.md).
 
-## Features
+## ✨ Features
 
-### Scalability
+### 📈 Scalability
 
 Traditional HTTP protocols are simple and universal, but they present challenges for building complex, scalable systems. In a microservices or multi-service architecture, the typical HTTP approach has several limitations:
 
@@ -50,7 +50,7 @@ Traditional HTTP protocols are simple and universal, but they present challenges
 
 `superblue` enhances the HTTP protocol by enabling you to directly write functions that can be called directly from the client. Internally, it uses the HTTP protocol in a way that enables you to write your code as a function rather than as an HTTP request, just like you would for any other function.
 
-### Type-safety
+### 🛡️ Type-safety
 
 JavaScript offers flexibility but lacks typing guarantees, making large-scale projects more challenging to maintain:
 
@@ -60,7 +60,7 @@ JavaScript offers flexibility but lacks typing guarantees, making large-scale pr
 
 `superblue` validates each and every one of your requests, from and to the server & clietn, ensuring each request and response adheres to defined schemas. This approach reduces errors, clarifies route contracts, and improves maintainability.
 
-### Error handling
+### 🐞 Error handling
 
 Error handling is a complex aspect of modern application development, with unique challenges on both server and client sides:
 
@@ -71,7 +71,7 @@ Error handling is a complex aspect of modern application development, with uniqu
 
 With `superblue`, error handling becomes more manageable, consistent, and secure across both server and client applications. Centralized error structures reduce duplication and provide a more predictable experience for clients, while controlled error responses enhance security.
 
-### Platform agnosticism
+### ⚙️ Platform agnosticism
 
 Supporting a wide range of platforms and environments is essential in modern API development, and `superblue` achieves this with an agnostic approach that benefits both server and client:
 
@@ -82,7 +82,7 @@ Supporting a wide range of platforms and environments is essential in modern API
 
 With `superblue`, teams gain a robust, platform-agnostic framework that reduces dependencies and enhances flexibility, making it ideal for projects that need to adapt to changing technologies or scale across different environments.
 
-## Prior Art
+## 📜 Prior Art
 
 ### tRPC
 
