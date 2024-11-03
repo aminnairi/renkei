@@ -1,6 +1,7 @@
 # Todo
 
-- Add a link to the contributing file and update it
+- Add link to contributor covenant
+- Add a link to the security policy
 - Add some issue templates
 - Add a pull requests template
 - Add a security policy template
