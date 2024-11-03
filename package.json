@@ -4,7 +4,7 @@
     "packages/core",
     "packages/fetch",
     "packages/node",
-    "miscellaneous/documentation",
+    "sites/documentation",
     "example/shared",
     "example/node",
     "example/react"
