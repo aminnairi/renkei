@@ -1,9 +1,10 @@
-import { createEventRoute, z } from "@superblue/core";
+import { createEventRoute } from "@superblue/core";
+import { z } from "zod";
 
 export const [userCreatedRoute, implementUserCreated] = createEventRoute({
   output: z.object({
     identifier: z.string(),
     firstname: z.string(),
     lastname: z.string()
-  })
+  }).parse
 });
