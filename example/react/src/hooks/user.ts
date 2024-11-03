@@ -11,8 +11,9 @@ export const useUser = () => {
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [users, setUsers] = useState<Users>([]);
-  const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [firstnameError, setFirstnameError] = useState("");
+  const [lastnameError, setLastnameError] = useState("");
 
   const getUsersAbortController = useRef(new AbortController());
   const createUserAbortController = useRef(new AbortController());
@@ -71,7 +72,8 @@ export const useUser = () => {
     try {
       event.preventDefault();
       setError("");
-      setMessage("");
+      setFirstnameError("");
+      setLastnameError("");
 
       const response = await client.createUser({
         input: {
@@ -105,22 +107,22 @@ export const useUser = () => {
             return
 
           case "FIRSTNAME_EMPTY":
-            setError("First name should not be empty.");
+            setFirstnameError("First name should not be empty.");
             focusFirstname();
             return
 
           case "FIRSTNAME_TOO_LONG":
-            setError("First name should be no more than 50 characters.");
+            setFirstnameError("First name should be no more than 50 characters.");
             focusFirstname();
             return
 
           case "LASTNAME_EMPTY":
-            setError("Last name should not be empty.");
+            setLastnameError("Last name should not be empty.");
             focusLastname();
             return
 
           case "LASTNAME_TOO_LONG":
-            setError("Last name should be no more than 50 characters.");
+            setLastnameError("Last name should be no more than 50 characters.");
             focusLastname();
             return
 
@@ -168,12 +170,13 @@ export const useUser = () => {
   }, [sendNotification]);
 
   return {
+    firstnameError,
+    lastnameError,
     lastname,
     firstname,
     lastnameRef,
     firstnameRef,
     error,
-    message,
     users,
     getUsers,
     createUser,

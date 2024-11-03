@@ -26,7 +26,6 @@ function App() {
     firstname,
     getUsers,
     lastname,
-    message,
     updateFirstname,
     updateLastname,
     users
@@ -41,11 +40,6 @@ function App() {
           <Typography variant="h4" align="center">
             Create one user
           </Typography>
-          {message && (
-            <Alert severity="info">
-              {message}
-            </Alert>
-          )}
           {error && (
             <Alert severity="error">
               {error}
