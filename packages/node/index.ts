@@ -1,7 +1,7 @@
 import { ServerAdapter } from "@superblue/core";
 import { createServer, IncomingMessage } from "http";
 import { Transform, Readable, PassThrough } from "stream";
-import { createBrotliCompress, createDeflate, createGzip } from "zlib"
+import { createBrotliCompress, createDeflate, createGzip } from "zlib";
 
 interface CompressionMetadata {
   compressionHeaders: { "Content-Encoding"?: "gzip" | "br" | "deflate" },
@@ -43,7 +43,7 @@ export function gzipCompression({ exceptions = [] }: GzipCompressionOptions = {}
         return {
           compressionHeaders: {},
           compressedStream: new PassThrough
-        }
+        };
       }
 
       const gzip = createGzip();
@@ -65,7 +65,7 @@ export function brotliCompression(): CompressionStrategy {
         return {
           compressionHeaders: {},
           compressedStream: new PassThrough
-        }
+        };
       }
 
       const compressedStream = createBrotliCompress();
@@ -87,7 +87,7 @@ export function deflateCompression(): CompressionStrategy {
         return {
           compressionHeaders: {},
           compressedStream: new PassThrough
-        }
+        };
       }
 
       const compressedStream = createDeflate();
@@ -104,11 +104,11 @@ export function deflateCompression(): CompressionStrategy {
 
 export function noCompression(): CompressionStrategy {
   return {
-    compress: (request) => {
+    compress: () => {
       return {
         compressionHeaders: {},
         compressedStream: new PassThrough
-      }
+      };
     }
   };
 }
@@ -126,7 +126,7 @@ export function createNodeHttpServerAdapter({ clients = [], compression = noComp
 
       request.on("error", error => {
         reject(error);
-      })
+      });
 
       request.on("end", () => {
         resolve(body);
@@ -151,7 +151,7 @@ export function createNodeHttpServerAdapter({ clients = [], compression = noComp
   return {
     onRequest: (callback) => {
       server.on("request", async (request, response) => {
-        const origin = request.headers.origin
+        const origin = request.headers.origin;
         const foundClient = clients.find(client => client === origin);
         const allowedOrigin = foundClient ? foundClient : "null";
 
@@ -170,8 +170,8 @@ export function createNodeHttpServerAdapter({ clients = [], compression = noComp
             headers: Object.fromEntries(Object.entries(request.headers).map(([name, value]) => [name, String(value)]))
           }));
 
-          const readableBody = toNodeReadable(callbackResponse.body ?? new ReadableStream())
-          const { compressedStream, compressionHeaders } = compression.compress(request)
+          const readableBody = toNodeReadable(callbackResponse.body ?? new ReadableStream());
+          const { compressedStream, compressionHeaders } = compression.compress(request);
 
           response.writeHead(callbackResponse.status, {
             ...Object.fromEntries(callbackResponse.headers.entries()),
