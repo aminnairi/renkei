@@ -1,15 +1,12 @@
 # Todo
 
 - Add a workflow to build the packages
-- Add linting routines in the workflow created above
 - Add a audit routine in the workflow created above for all packages
 - Publish the library
 - Add a docker compose infrastructure
 
 ## @superblue/core
 
-- Add more rules for eslint
-- Run eslint on push
 - Add a custom error for when the status code is wrong
 - Add a custom error for when the network is down
 - Add a custom error for when the request is canceled
