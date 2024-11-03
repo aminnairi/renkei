@@ -339,6 +339,54 @@ createServer({
 
 Here, `text/event-stream` is the `Content-Type` header sent when sending events to the client, so that they are ignored from the compression strategy properly and sent accordingly to the browser to be decoded normally.
 
+Now, we can start our server! By providing a host and port, we can start our server listeining on whatever port and/or host we want, and we get a close function that we can use to close all current and future connections to the HTTP server at anytime.
+
+```typescript
+import { createApplication, createHttpRoute, z } from "@superblue/core";
+import { createNodeHttpServerAdpater, gzipCompression } from "@superblue/node";
+
+const [ createUserRoute, implementCreateUserRoute ] = createHttpRoute({
+  input: z.object({
+    firstname: z.string()
+  }),
+  output: z.object({
+    identifier: z.string()
+  })
+});
+
+const { createServer } = createApplication({
+  routes: {
+    createUser: createUserRoute
+  }
+});
+
+const server = createServer({
+  implementations: {
+    createUser: implementCreateUserRoute(async ({ firstname }) => {
+      return {
+        identifier: `id:${firstname}:id`
+      }
+    })
+  },
+  adapter: createNodeHttpServerAdapter({
+    clients: ["https://app.yourapp.com"],
+    compression: gzipCompression({
+      exceptions: [
+        "text/event-stream"
+      ]
+    })
+  })
+});
+
+const port = 8000;
+const host = "0.0.0.0";
+const close = await server.start({ port, host});
+
+console.log(`Server listening for HTTP requests on http://${host}:${port}.`);
+```
+
+That's it, we can now use what we know about the `http` library in order to start our server as usual.
+
 ## What's next
 
 Now that you setup your server, you may want to setup your client as well if this is not done already, head to [`@superblue/fetch`](../fetch) if you want to use the official Web API `fetch` function for sending requests to your server, or use any client adapter you want (or your own) in order to have a complete environment.
