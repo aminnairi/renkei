@@ -5,7 +5,7 @@ export function createFetchAdapter(): ClientAdapter {
     request: async ({ body, url, signal }) => {
       const response = await window.fetch(url, {
         method: "POST",
-        signal: signal,
+        signal: signal ?? null,
         body,
         headers: {
           "Content-Type": "application/json",
