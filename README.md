@@ -22,11 +22,19 @@ Example | Type | Description
 
 See [`LICENSE`](./LICENSE).
 
-## How to contribute
+## Contributing
 
 See [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
-## What's left to do
+## Code of conduct
+
+See [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md).
+
+## Security
+
+See [`SECURITY.md`](./SECURITY.md).
+
+## Todo
 
 See [`TODO.md`](./TODO.md).
 
