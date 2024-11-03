@@ -10,7 +10,7 @@ Package | Type | Description
 [`@superblue/fetch`](./packages/fetch) | Client | Web API Fetch adapter for superblue
 [`@superblue/node`](./packages/node) | Server | Node.js adapter for superblue
 
-## Example
+## 💡 Example
 
 Example | Type | Description
 ---|---|---
