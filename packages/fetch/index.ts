@@ -1,4 +1,4 @@
-import { ClientAdapter } from "@superblue/core"
+import { ClientAdapter } from "@superblue/core";
 
 export function createFetchAdapter(): ClientAdapter {
   return {
