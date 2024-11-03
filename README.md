@@ -75,39 +75,49 @@ With `superblue`, error handling becomes more manageable, consistent, and secure
 
 ### tRPC
 
-tRPC is a library that helps you write APIs that are type-safe to consume on the client.
+tRPC is a popular library in the TypeScript community for building APIs with type-safe client consumption. It has gained traction in widely used stacks like T3 and Sidebase and is now a well-established, battle-tested choice. In contrast, Superblue is a newer library offering a similar advantage: end-to-end type safety, allowing developers to write APIs faster and with greater confidence by minimizing the risk of breaking changes.
 
-It is now well known in the TypeScript community, it is especially used in stacks like the T3 or Sidebase and is now a battle-tested library, in the contrary of superblue which is still at its young age.
+However, tRPC and Superblue operate quite differently. Superblue relies heavily on Zod for schema definitions, which are then used both on the client and server to validate data, while tRPC is more flexible with schema tooling, allowing you to choose your preferred schema library for type-checking.
 
-Superblue is very similar in the sense that it helps you build APIs with end-to-end type safety, enabling you to write code faster and safer, without fearing breaking something.
+On the client side, tRPC doesn’t enforce any special validation with the server; it simply imports types that guide data structures for requests, leaving it up to the server to validate incoming data against the schema. Superblue, by comparison, validates data both client- and server-side, adding a layer of runtime checks. This dual validation ensures that even if a server response differs unexpectedly (e.g., due to a crash or unexpected error), the client will still validate the data before using it, providing a bit more safety at the cost of some runtime overhead.
 
-However, the way tRPC works compared to superblue are very different.
+Both tRPC and Superblue work with major frameworks and server environments. While tRPC is somewhat tied to Node.js primitives, Superblue takes a more modular approach with its `@superblue/core` package, which remains implementation-agnostic. Instead, Superblue provides abstract interfaces implemented by various adapters, like `@superblue/fetch` and `@superblue/node`, with more likely to follow.
 
-Superblue highly relies on Zod in order to create a schema that you can then use on the client and the server to communicate and receive data. This is not the case for tRPC since it enabled you to choose whatever you want to create the schema that is then used to type check your data.
-
-On the other hand, tRPC on the client does not do anything special with the server, it only import the types that help you send the correct data to the server, that will then validate that the data is aligned according to the schema.
-
-Superblue does things in a little more paranoid fashion: it checks for the data on both the client and the server, because if something happens, and the server has to send something totally different (in case of a crash for example), you can be sure that the data is still validated on the client, and so at runtime. This adds some runtime slowdown, but at the cost of more data safety.
-
-Both tRPC and superblue works with major framework and servers. While tRPC is somewhat coupled to some Node.js primitives, on the other hand superblue, in its package `@superblue/core` is not tied to any specific implementation, and rather relies on abstract interfaces that are then implemented by libraries such as `@superblue/fetch` and `@superblue/node`, and more to come!
-
-tRPC does something very interesting to enhance request performance when sending multiple requests at the same time: batching. This enables you to have multiple requests sent as one, decreasing the number of requests and data needed to perform your actions. This is something that is actually missing in superblue, but maybe implemented in a near future.
+One unique feature of tRPC is request batching, which allows multiple requests to be grouped and sent as a single request, enhancing performance and reducing request overhead. Currently, Superblue doesn’t support batching, though it may be added in the future.
 
 ### GraphQL
 
-GraphQL stands out as a unique solution in the landscape of APIs, designed primarily to provide a more flexible and efficient way of handling data fetching. Unlike traditional REST APIs, where the server dictates the structure of the response, GraphQL allows clients to specify exactly what data they need. This flexibility can reduce the amount of data transferred over the network and minimize the number of requests required to gather related information. However, this comes with its own complexities, including the need for more robust querying mechanisms and the overhead of managing the schema. While GraphQL is excellent for applications that require complex data interactions, it operates in a different realm compared to Superblue, which emphasizes type-safe remote procedure calls with straightforward server-client communication.
+GraphQL is a distinctive solution in the API landscape, designed to provide a more flexible and efficient approach to data fetching. Unlike traditional REST APIs, where the server defines the structure of the response, GraphQL empowers clients to request precisely the data they need. 
+
+This client-driven flexibility can help reduce network data transfer and minimize the number of requests required to gather related information. However, it introduces complexities, such as the need for more robust querying mechanisms and the overhead of managing a schema.
+
+While GraphQL excels in applications needing complex data interactions, it operates differently from Superblue. Superblue focuses on type-safe remote procedure calls, aiming for straightforward and type-checked server-client communication.
 
 ### gRPC
 
-gRPC stands out as a powerful solution for performance-oriented, cross-language communications, making it a favored choice in microservices architectures. One of its key advantages is its support for multiple programming languages, allowing developers to build services in various languages while still maintaining seamless interoperability. gRPC utilizes Protocol Buffers for serialization, which ensures efficient data exchange and enables automatic generation of client libraries across languages such as Java, Python, Go, and C#. This multi-language capability makes gRPC particularly appealing for organizations that leverage diverse technology stacks. However, it's important to note that gRPC operates outside the constraints of the HTTP protocol, limiting its use primarily to server-to-server communications rather than client-facing applications. While Superblue and gRPC share common ground in providing type-safe, structured communication, gRPC’s emphasis on inter-service connectivity and its broad multi-language support further distinguish it from Superblue, which focuses on facilitating type-safe remote procedure calls for both client and server applications.
+gRPC is a powerful solution designed for performance-oriented, cross-language communications, making it a popular choice in microservices architectures. Its primary advantage lies in its multi-language support, enabling developers to build services in various programming languages while maintaining seamless interoperability.
+
+gRPC leverages Protocol Buffers for serialization, ensuring efficient data exchange and enabling automatic generation of client libraries for languages like Java, Python, Go, and C#. This versatility makes gRPC especially appealing to organizations with diverse technology stacks.
+
+However, it’s worth noting that gRPC operates outside of the HTTP protocol, which limits its primary use to server-to-server communications rather than client-facing applications.
+
+While Superblue and gRPC both emphasize type-safe, structured communication, gRPC focuses on inter-service connectivity and broad multi-language compatibility. In contrast, Superblue centers on facilitating type-safe remote procedure calls that are equally suited for both client and server applications.
 
 ### Hono
 
-Hono is a lightweight framework that supports remote procedure calls (RPC) and facilitates seamless communication between client and server through its built-in libraries. While it boasts an impressive feature set, including a client and server library, Hono currently lags behind Superblue in terms of type safety and validation for incoming data. The framework's approach to RPC makes it an interesting alternative for developers looking for a simple yet effective solution. As Hono continues to evolve, it could bridge the gap in type safety, potentially expanding its use cases and aligning more closely with the capabilities offered by Superblue.
+Hono is a lightweight framework designed to support remote procedure calls (RPC) and facilitate seamless client-server communication through its built-in libraries. It offers a range of features, including libraries for both client and server functionality, making it a convenient choice for straightforward RPC solutions.
+
+However, Hono currently falls short of Superblue in terms of type safety and validation for incoming data. This gap in type safety makes it less robust for applications that require strict data validation and type consistency.
+
+Despite this, Hono’s simplicity and effective RPC approach make it an appealing alternative for developers seeking a streamlined solution. As Hono continues to develop, it may close the gap in type safety, potentially broadening its use cases and aligning more closely with the capabilities offered by Superblue.
 
 ### TS Rest
 
-TS Rest is perhaps the closest library to Superblue in terms of shared principles, as it emphasizes the importance of contracts in API communication. By allowing developers to define a contract that both the client and server must adhere to, TS Rest provides a clear structure for interaction. Its support for defining both the request body and status codes adds an additional layer of type discrimination, enhancing the overall type safety of the communication. However, Superblue encourages users to manage type definitions on their own, promoting flexibility in API design. The design philosophies of TS Rest have greatly inspired Superblue’s approach, highlighting the need for robust type-safe communication solutions in modern development.
+TS Rest is perhaps the most similar library to Superblue, as both emphasize the importance of contracts in API communication. TS Rest enables developers to define a contract that both the client and server must follow, providing a clear structure for interaction.
+
+One of TS Rest's strengths is its support for defining both the request body and status codes, adding an extra layer of type discrimination and enhancing overall type safety in communication.
+
+Superblue, on the other hand, promotes flexibility by encouraging users to manage type definitions themselves, giving them greater freedom in API design. Superblue’s approach is heavily inspired by TS Rest’s design philosophy, underscoring the demand for robust, type-safe communication solutions in modern development.
 
 ### Others?
 
