@@ -2,6 +2,11 @@
 
 Effortless type-safe communication between client and server
 
+## Requirements
+
+- [Node](https://nodejs.org)
+- [NPM](https://npmjs.com)
+
 ## Installation
 
 Create your project's folder.
