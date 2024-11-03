@@ -2,6 +2,7 @@ import { ChangeEventHandler, FormEventHandler, useCallback, useEffect, useRef, u
 import { Users } from '@example/shared/routes/getUsers';
 import { client } from "../superblue/client";
 import { useNotification } from './notification';
+import { CancelError } from '@superblue/core';
 
 export const useUser = () => {
   const { sendNotification } = useNotification();
@@ -41,6 +42,11 @@ export const useUser = () => {
       });
 
       if (receivedUsers instanceof Error) {
+        if (receivedUsers instanceof CancelError) {
+          setError("Request canceled");
+          return;
+        }
+
         setError("Something went wrong, please try again later.");
         return;
       }
@@ -67,6 +73,11 @@ export const useUser = () => {
       });
 
       if (response instanceof Error) {
+        if (response instanceof CancelError) {
+          setError("Request has been canceled.");
+          return;
+        }
+
         setError("Something went wrong, please try again later.");
         return;
       }
