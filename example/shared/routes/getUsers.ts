@@ -1,4 +1,5 @@
-import { createHttpRoute, z } from "@superblue/core";
+import { createHttpRoute } from "@superblue/core";
+import { z } from "zod";
 
 export const usersSchema = z.array(z.object({
   identifier: z.string(),
@@ -7,8 +8,8 @@ export const usersSchema = z.array(z.object({
 }))
 
 export const [getUsersRoute, implementGetUsers] = createHttpRoute({
-  input: z.null(),
-  output: usersSchema
+  input: value => z.null().parse(value),
+  output: value => usersSchema.parse(value)
 });
 
 export type Users = z.infer<typeof usersSchema>
