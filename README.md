@@ -71,6 +71,17 @@ Error handling is a complex aspect of modern application development, with uniqu
 
 With `superblue`, error handling becomes more manageable, consistent, and secure across both server and client applications. Centralized error structures reduce duplication and provide a more predictable experience for clients, while controlled error responses enhance security.
 
+### Platform and library agnostic
+
+Supporting a wide range of platforms and environments is essential in modern API development, and `superblue` achieves this with an agnostic approach that benefits both server and client:
+
+- **Abstracted Interfaces for Flexibility**: Rather than relying on specific frameworks or environments, `superblue` uses abstract interfaces, ensuring that core functionalities remain compatible across platforms and libraries.
+- **Plug-and-Play Adapters for Popular Environments**: With adapters like `@superblue/fetch` and `@superblue/node`, `superblue` integrates easily with commonly used libraries. Developers can add these adapters as needed, enabling seamless setup for diverse environments.
+- **No Vendor Lock-In**: By remaining independent of particular frameworks, `superblue` allows teams to switch or combine libraries and runtimes without modifying API logic. This is ideal for applications that evolve or require varied deployment models.
+- **Future-Proof and Extensible Design**: `superblue`'s roadmap includes more adapters and extensions, ensuring compatibility with upcoming platforms and new architecture patterns, providing developers with a long-term, adaptable API solution.
+
+With `superblue`, teams gain a robust, platform-agnostic framework that reduces dependencies and enhances flexibility, making it ideal for projects that need to adapt to changing technologies or scale across different environments.
+
 ## Prior Art
 
 ### tRPC
