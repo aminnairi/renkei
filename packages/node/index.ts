@@ -205,12 +205,13 @@ export function createNodeHttpServerAdapter({ clients = [], compression = noComp
     create: () => {
       return {
         start: ({ host, port }) => {
-          server.listen(port, host, () => {
-            console.log(`Server listening on http://${host}:${port}`);
+          return new Promise((resolve) => {
+            server.listen(port, host, () => {
+              resolve(() => {
+                server.close();
+              });
+            });
           });
-        },
-        stop: () => {
-          server.close();
         }
       };
     }
