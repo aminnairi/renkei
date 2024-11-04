@@ -272,4 +272,4 @@ And now for starting the client.
 npm -w @app/client start
 ```
 
-If everything went accordingly, you should be able to open your client application at [`localhost:5173`](http://localhost:5173) (the default Vite.js port) and see the result in your Developer Console!
+If everything went accordingly, you should be able to open your client application at <a href="http://localhost:5173" target="_blank">localhost:5173</a> (the default Vite.js port) and see the result in your Developer Console!
