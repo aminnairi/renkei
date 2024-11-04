@@ -1,7 +1,7 @@
 import { ServerAdapter } from "@superblue/core";
-import { createServer, IncomingMessage } from "http";
-import { Transform, Readable, PassThrough } from "stream";
-import { createBrotliCompress, createDeflate, createGzip } from "zlib";
+import { createServer, IncomingMessage } from "node:http";
+import { Transform, Readable, PassThrough } from "node:stream";
+import { createBrotliCompress, createDeflate, createGzip } from "node:zlib";
 
 interface CompressionMetadata {
   compressionHeaders: Record<string, string>,
