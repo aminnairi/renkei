@@ -1,6 +1,6 @@
-# @superblue/fetch
+# @renkei/fetch
 
-Web API Fetch adapter for superblue
+Web API Fetch adapter for renkei
 
 ## Documentation
 

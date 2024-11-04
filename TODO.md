@@ -7,7 +7,7 @@
 - Create documentation using Docusaurus
 - Initiate the next naming change
 
-## @superblue/core
+## @renkei/core
 
 - Add a custom error for when the network is down
 - Add unit tests
@@ -17,7 +17,7 @@
 - Add documentation for `createEventRoute`
 - Better typing for the validated input and output, to be discriminated and returned as 400 errors from the server
 
-## @superblue/fetch
+## @renkei/fetch
 
 - Allow passing options for the `createFetchAdapter` function
 - Allow compressing the data if possible
@@ -25,7 +25,7 @@
 - Add integration tests
 - Add badges
 
-## @superblue/node
+## @renkei/node
 
 - Account for compressed requests (see above) if possible
 - Add an example explaining how to create its own compression strategy
@@ -45,6 +45,6 @@
 
 - Separate the `getUsers` logic from the `createUser` logic and the `userCreated` logic
 
-## @superblue/schema
+## @renkei/schema
 
 - Create a library that allows for using JSON-safe types for the validation of routes

@@ -1,5 +1,5 @@
 import { createServer } from "@example/shared"
-import { createNodeHttpServerAdapter, gzipCompression } from "@superblue/node";
+import { createNodeHttpServerAdapter, gzipCompression } from "@renkei/node";
 
 import { createUserImplementation } from "./implementations/createUser";
 import { getUsersImplementation } from "./implementations/getUsers";

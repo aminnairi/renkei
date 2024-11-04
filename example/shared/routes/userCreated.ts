@@ -1,4 +1,4 @@
-import { createEventRoute } from "@superblue/core";
+import { createEventRoute } from "@renkei/core";
 import { z } from "zod";
 
 export const [userCreatedRoute, implementUserCreated] = createEventRoute({

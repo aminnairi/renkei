@@ -1,6 +1,6 @@
-# @superblue/example
+# example
 
-Example for superblue
+Example for renkei
 
 ## Requirements
 

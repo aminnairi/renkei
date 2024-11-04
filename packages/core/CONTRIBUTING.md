@@ -11,8 +11,8 @@ Note that if you know what you are doing, you can also use other runtimes and pa
 ## Clone the repository or fork the repository
 
 ```bash
-git clone https://github.com/<username>/superblue
-cd superblue
+git clone https://github.com/<username>/renkei
+cd renkei
 ```
 
 Where `<username>` is your GitHub's account user name. If only cloning from the official repository, replace `<username>` with `aminnairi`.

@@ -3,7 +3,7 @@
   "type": "module",
   "name": "@example/node",
   "version": "0.1.0",
-  "description": "Node example for superblue",
+  "description": "Node example for renkei",
   "scripts": {
     "start": "tsx --watch index.ts"
   },

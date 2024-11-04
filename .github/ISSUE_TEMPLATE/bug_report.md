@@ -27,7 +27,7 @@ If applicable, add screenshots to help explain your problem.
  - OS (ex: Windows 10): 
  - Browser (ex: Google Chrome 123): 
  - Platform (ex: Node.js 23.4.1): 
- - Package (ex: `@superblue/core@2.1.4`): 
+ - Package (ex: `@renkei/core@2.1.4`): 
 
 **Additional context**
 Add any other context about the problem here.

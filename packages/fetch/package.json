@@ -1,9 +1,9 @@
 {
   "private": true,
   "type": "module",
-  "name": "@superblue/fetch",
+  "name": "@renkei/fetch",
   "version": "0.1.0",
-  "description": "Web API Fetch adapter for superblue",
+  "description": "Web API Fetch adapter for renkei",
   "scripts": {
     "lint": "tsc --noEmit"
   },

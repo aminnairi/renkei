@@ -1,6 +1,6 @@
-# @superblue/node
+# @renkei/node
 
-Node.js adapters for superblue
+Node.js adapters for renkei
 
 ## Documentation
 

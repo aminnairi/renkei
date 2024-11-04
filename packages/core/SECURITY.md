@@ -12,9 +12,9 @@ A 🔴 indicates that this version is not supported for security backports, and 
 
 | Package            | Version    | Supported          |
 | ------------------ | ---------- | ------------------ |
-| `@superblue/core`  | `x.x.x`    | :white_check_mark: |
-| `@superblue/fetch` | `x.x.x`    | :white_check_mark: |
-| `@superblue/node`  | `x.x.x`    | :white_check_mark: |
+| `@renkei/core`  | `x.x.x`    | :white_check_mark: |
+| `@renkei/fetch` | `x.x.x`    | :white_check_mark: |
+| `@renkei/node`  | `x.x.x`    | :white_check_mark: |
 
 ## 🐞 Reporting a Vulnerability
 

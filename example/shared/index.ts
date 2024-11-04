@@ -1,4 +1,4 @@
-import { createApplication } from "@superblue/core";
+import { createApplication } from "@renkei/core";
 import { createUserRoute } from "./routes/createUser";
 import { getUsersRoute } from "./routes/getUsers";
 import { userCreatedRoute } from "./routes/userCreated";

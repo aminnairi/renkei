@@ -1,8 +1,8 @@
 import { ChangeEventHandler, FormEventHandler, useCallback, useEffect, useRef, useState } from 'react'
 import { Users } from '@example/shared/routes/getUsers';
-import { client } from "../superblue/client";
+import { client } from "../renkei/client";
 import { useNotification } from './notification';
-import { CancelError } from '@superblue/core';
+import { CancelError } from '@renkei/core';
 
 export const useUser = () => {
   const { sendNotification } = useNotification();

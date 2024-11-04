@@ -1,4 +1,4 @@
-# @superblue/core
+# @renkei/core
 
 Effortless type-safe communication between client and server
 

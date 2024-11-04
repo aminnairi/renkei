@@ -22,7 +22,7 @@ Traditional HTTP protocols are simple and universal, but they present challenges
 - **Error and Status Handling**: HTTP error handling can become inconsistent or imprecise, especially in environments with numerous dependencies and potential error sources.
 - **Consistency and Code Reuse**: As applications grow, maintaining consistent handling of routes, schemas, and error structures across multiple services becomes harder. Repeated configuration in each service leads to duplicated code and increases the risk of inconsistency.
 
-`superblue` enhances the HTTP protocol by enabling you to directly write functions that can be called directly from the client. Internally, it uses the HTTP protocol in a way that enables you to write your code as a function rather than as an HTTP request, just like you would for any other function.
+`renkei` enhances the HTTP protocol by enabling you to directly write functions that can be called directly from the client. Internally, it uses the HTTP protocol in a way that enables you to write your code as a function rather than as an HTTP request, just like you would for any other function.
 
 ### 🛡️ Type-safety
 
@@ -32,26 +32,26 @@ JavaScript offers flexibility but lacks typing guarantees, making large-scale pr
 - **Manual Validation**: Without static typing, request and response payloads require complex, manual validation, adding bug-prone code to each route.
 - **Repetitive Code**: Handling requests and responses in a classic JavaScript system involves duplicative code that increases technical debt and reduces code readability.
 
-`superblue` validates each and every one of your requests, from and to the server & clietn, ensuring each request and response adheres to defined schemas. This approach reduces errors, clarifies route contracts, and improves maintainability.
+`renkei` validates each and every one of your requests, from and to the server & clietn, ensuring each request and response adheres to defined schemas. This approach reduces errors, clarifies route contracts, and improves maintainability.
 
 ### 🐞 Error handling
 
 Error handling is a complex aspect of modern application development, with unique challenges on both server and client sides:
 
 - **Standardized Error Structures**: Without a unified structure, errors across services are inconsistent, making it difficult for clients to interpret and handle them accurately.
-- **Centralized Control**: Configuring access controls and error handling in each service individually adds maintenance overhead and increases security risks. superblue allows centralized configuration of error handling, reducing redundancy and improving error clarity.
+- **Centralized Control**: Configuring access controls and error handling in each service individually adds maintenance overhead and increases security risks. `renkei` allows centralized configuration of error handling, reducing redundancy and improving error clarity.
 - **Detailed Error Messages for Clients**: Client applications, such as mobile and web apps, need structured, predictable error responses to provide feedback to users and make intelligent retry or fallback decisions.
-- **Improved Security with Controlled Responses**: Detailed error messages must be managed carefully to avoid revealing sensitive information. With `superblue`, error responses can be configured to balance user feedback and security, ensuring that only necessary information is shared while maintaining safe practices.
+- **Improved Security with Controlled Responses**: Detailed error messages must be managed carefully to avoid revealing sensitive information. With `renkei`, error responses can be configured to balance user feedback and security, ensuring that only necessary information is shared while maintaining safe practices.
 
-With `superblue`, error handling becomes more manageable, consistent, and secure across both server and client applications. Centralized error structures reduce duplication and provide a more predictable experience for clients, while controlled error responses enhance security.
+With `renkei`, error handling becomes more manageable, consistent, and secure across both server and client applications. Centralized error structures reduce duplication and provide a more predictable experience for clients, while controlled error responses enhance security.
 
 ### ⚙️ Platform agnosticism
 
-Supporting a wide range of platforms and environments is essential in modern API development, and `superblue` achieves this with an agnostic approach that benefits both server and client:
+Supporting a wide range of platforms and environments is essential in modern API development, and `renkei` achieves this with an agnostic approach that benefits both server and client:
 
-- **Abstracted Interfaces for Flexibility**: Rather than relying on specific frameworks or environments, `superblue` uses abstract interfaces, ensuring that core functionalities remain compatible across platforms and libraries.
-- **Plug-and-Play Adapters for Popular Environments**: With adapters like `@superblue/fetch` and `@superblue/node`, `superblue` integrates easily with commonly used libraries. Developers can add these adapters as needed, enabling seamless setup for diverse environments.
-- **No Vendor Lock-In**: By remaining independent of particular frameworks, `superblue` allows teams to switch or combine libraries and runtimes without modifying API logic. This is ideal for applications that evolve or require varied deployment models.
-- **Future-Proof and Extensible Design**: `superblue`'s roadmap includes more adapters and extensions, ensuring compatibility with upcoming platforms and new architecture patterns, providing developers with a long-term, adaptable API solution.
+- **Abstracted Interfaces for Flexibility**: Rather than relying on specific frameworks or environments, `renkei` uses abstract interfaces, ensuring that core functionalities remain compatible across platforms and libraries.
+- **Plug-and-Play Adapters for Popular Environments**: With adapters like `@renkei/fetch` and `@renkei/node`, `renkei` integrates easily with commonly used libraries. Developers can add these adapters as needed, enabling seamless setup for diverse environments.
+- **No Vendor Lock-In**: By remaining independent of particular frameworks, `renkei` allows teams to switch or combine libraries and runtimes without modifying API logic. This is ideal for applications that evolve or require varied deployment models.
+- **Future-Proof and Extensible Design**: `renkei`'s roadmap includes more adapters and extensions, ensuring compatibility with upcoming platforms and new architecture patterns, providing developers with a long-term, adaptable API solution.
 
-With `superblue`, teams gain a robust, platform-agnostic framework that reduces dependencies and enhances flexibility, making it ideal for projects that need to adapt to changing technologies or scale across different environments.
+With `renkei`, teams gain a robust, platform-agnostic framework that reduces dependencies and enhances flexibility, making it ideal for projects that need to adapt to changing technologies or scale across different environments.

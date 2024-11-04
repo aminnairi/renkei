@@ -1,9 +1,9 @@
 {
   "private": true,
   "type": "module",
-  "name": "@superblue/node",
+  "name": "@renkei/node",
   "version": "0.1.0",
-  "description": "Node.js adapters for superblue",
+  "description": "Node.js adapters for renkei",
   "scripts": {
     "lint": "tsc --noEmit"
   },

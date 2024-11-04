@@ -1,4 +1,4 @@
-import { createHttpRoute } from "@superblue/core";
+import { createHttpRoute } from "@renkei/core";
 import { z } from "zod";
 
 export const [createUserRoute, implementCreateUser] = createHttpRoute({

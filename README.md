@@ -1,4 +1,4 @@
-# superblue
+# renkei
 
 🤝 Effortless type-safe communication between client and server
 

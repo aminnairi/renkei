@@ -7,7 +7,7 @@ export const Header = () => {
     <AppBar>
       <Toolbar>
         <Typography variant="h4">
-          Superblue
+          Renkei
         </Typography>
       </Toolbar>
     </AppBar>

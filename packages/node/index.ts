@@ -1,4 +1,4 @@
-import { ServerAdapter } from "@superblue/core";
+import { ServerAdapter } from "@renkei/core";
 import { createServer, IncomingMessage } from "node:http";
 import { Transform, Readable, PassThrough } from "node:stream";
 import { createBrotliCompress, createDeflate, createGzip } from "node:zlib";
