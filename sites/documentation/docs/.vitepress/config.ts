@@ -27,6 +27,23 @@ export default defineConfig({
         ]
       },
       {
+        text: "Packages",
+        items: [
+          {
+            text: "core",
+            link: "/packages/core"
+          },
+          {
+            text: "fetch",
+            link: "/packages/fetch"
+          },
+          {
+            text: "node",
+            link: "/packages/node"
+          }
+        ]
+      },
+      {
         text: "Going Further",
         items: [
           {
