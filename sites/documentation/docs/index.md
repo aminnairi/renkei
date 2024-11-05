@@ -8,7 +8,7 @@ Effortless type-safe communication between client and server
 
 ## 🤔 What is Renkei?
 
-Renkei comes from the japanese word 連携, which translates to coordination, collaboration.
+Renkei comes from the japanese word renkei (_連携_), pronounced _/ɾeŋkeɪ/_, which translates to coordination, collaboration.
 
 This library allows you to create a client & server bridge using TypeScript, so that you can reliably exchange informations in a seamless way that enables you to confidently update code from one of those part, without having the fear of forgetting something thanks to the type-safety offered by this library.
 
