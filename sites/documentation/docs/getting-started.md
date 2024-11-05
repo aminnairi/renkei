@@ -121,12 +121,12 @@ import { createApplication, createHttpRoute } from "@renkei/core";
 import { z } from "zod";
 
 export const [ createUserRoute, implementCreateUserRoute ] = createHttpRoute({
-  input: createUser: value => {
+  input: value => {
     return z.object({
       firstname: z.string()
     }).parse(value);
   },
-  output: createUser: value => {
+  output: value => {
     return z.object({
       identifier: z.string()
     }).parse(value);
