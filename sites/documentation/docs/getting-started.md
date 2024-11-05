@@ -97,9 +97,9 @@ We will also be using `zod` as the validator library this example, but feel free
 Lastly, we will use `tsx` in order to execute the TypeScript code and start the server.
 
 ```bash
-npm -w @app/core i @renkey/core zod tsx
-npm -w @app/client i vite @renkey/fetch
-npm -w @app/server i @renkey/node
+npm -w @app/core i @renkei/core zod tsx
+npm -w @app/client i vite @renkei/fetch
+npm -w @app/server i @renkei/node
 ```
 
 ::: tip
