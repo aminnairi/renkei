@@ -1,5 +1,4 @@
 {
-  "private": true,
   "type": "module",
   "name": "@renkei/node",
   "version": "0.1.0",

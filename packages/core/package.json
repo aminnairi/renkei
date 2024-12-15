@@ -1,5 +1,4 @@
 {
-  "private": true,
   "type": "module",
   "name": "@renkei/core",
   "version": "0.1.0",
