@@ -12,8 +12,10 @@
 - Add a custom error for when the network is down
 - Add unit tests
 - Add badges
-- Add documentation about how to create a custom `ServerAdapter`
-- Add documentation about how to create a custom `ClientAdapter`
+- Create another adapter interface for event routes like `EventSourceAdapter`
+- Add a `httpAdapter` and `eventSourceAdpater` in the `createClient` function, and remove the `adapter` property
+- Rename the `ClientAdapter` into `HttpClientAdapter`
+- Rename the `ServerAdapter` into `HttpServerAdapter`
 - Add documentation for `createEventRoute`
 - Better typing for the validated input and output, to be discriminated and returned as 400 errors from the server
 
@@ -24,6 +26,7 @@
 - Show an example of a file upload
 - Add integration tests
 - Add badges
+- Add @renkei/core as a peer dependency and fix the version number
 
 ## @renkei/node
 
@@ -35,6 +38,8 @@
 - Make the cors checking stricter
 - Add the ability to rate limit the requests
 - Add a static file server
+- Add @renkei/core as a peer dependency and fix the version number
+- Rename the adapter into `createHttpAdapter` to match the naming convention from the `createFetchAdapter`
 
 ## @example/node
 
@@ -48,3 +53,7 @@
 ## @renkei/schema
 
 - Create a library that allows for using JSON-safe types for the validation of routes
+
+## Documentation
+
+- Fix mistakes when calling zod without the parse method
